@@ -1,0 +1,110 @@
+=== tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts ===
+// TODO(aclaymore) split up into seperate cases
+
+class Foo {
+>Foo : Symbol(Foo, Decl(privateNameInInExpression.ts, 0, 0))
+
+    #p1 = 1;
+>#p1 : Symbol(Foo.#p1, Decl(privateNameInInExpression.ts, 2, 11))
+
+    m1(v: {}) {
+>m1 : Symbol(Foo.m1, Decl(privateNameInInExpression.ts, 3, 12))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 4, 7))
+
+        #p1 in v; // Good
+    }
+    m2(v: any) {
+>m2 : Symbol(Foo.m2, Decl(privateNameInInExpression.ts, 6, 5))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 7, 7))
+
+        #p1 in v.p1.p2; // Good
+    }
+    m3(v: unknown) {
+>m3 : Symbol(Foo.m3, Decl(privateNameInInExpression.ts, 9, 5))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 10, 7))
+
+        #p1 in v; // Bad - RHS of in must be object type or any
+    }
+    m4(v: any) {
+>m4 : Symbol(Foo.m4, Decl(privateNameInInExpression.ts, 12, 5))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 13, 7))
+
+        #p2 in v; // Bad - Invalid private id
+    }
+    m5(v: any) {
+>m5 : Symbol(Foo.m5, Decl(privateNameInInExpression.ts, 15, 5))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 16, 7))
+
+        (#p1) in v; // Bad - private id is not an expression on it's own
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 16, 7))
+    }
+    m6(v: any) {
+>m6 : Symbol(Foo.m6, Decl(privateNameInInExpression.ts, 18, 5))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 19, 7))
+
+        for (#p1 in v) { /* no-op */ } // Bad - 'in' not allowed
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 19, 7))
+    }
+    m7(v: any) {
+>m7 : Symbol(Foo.m7, Decl(privateNameInInExpression.ts, 21, 5))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 22, 7))
+
+        for (let x in #p1 in v as any) { /* no-op */ } // Good - weird but valid
+>x : Symbol(x, Decl(privateNameInInExpression.ts, 23, 16))
+    }
+    m8(v: any) {
+>m8 : Symbol(Foo.m8, Decl(privateNameInInExpression.ts, 24, 5))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 25, 7))
+
+        for (let x in #p1 in v) { /* no-op */ } // Bad - rhs of in should be a object/any
+>x : Symbol(x, Decl(privateNameInInExpression.ts, 26, 16))
+    }
+    m9(v: any) {
+>m9 : Symbol(Foo.m9, Decl(privateNameInInExpression.ts, 27, 5))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 28, 7))
+
+        // '==' has lower precedence than 'in'
+        // '<'  has same prededence than 'in'
+        // '<<' has higher prededence than 'in'
+
+        v == #p1 in v == v; // Good precidence: ((v == (#p1 in v)) == v)
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 28, 7))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 28, 7))
+
+        v << #p1 in v << v; // Good precidence: (v << (#p1 in (v << v)))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 28, 7))
+
+        v << #p1 in v == v; // Good precidence: ((v << (#p1 in v)) == v)
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 28, 7))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 28, 7))
+
+        v == #p1 in v < v; // Good precidence: (v == ((#p1 in v) < v))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 28, 7))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 28, 7))
+
+        #p1 in v && #p1 in v; // Good precidence: ((#p1 in v) && (#p1 in v))
+    }
+    m10() {
+>m10 : Symbol(Foo.m10, Decl(privateNameInInExpression.ts, 42, 5))
+
+        class Bar {
+>Bar : Symbol(Bar, Decl(privateNameInInExpression.ts, 43, 11))
+
+            m10(v: any) {
+>m10 : Symbol(Bar.m10, Decl(privateNameInInExpression.ts, 44, 19))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 45, 16))
+
+                #p1 in v; // Good: access parent class
+            }
+        }
+    }
+}
+
+function error(v: Foo) {
+>error : Symbol(error, Decl(privateNameInInExpression.ts, 50, 1))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 52, 15))
+>Foo : Symbol(Foo, Decl(privateNameInInExpression.ts, 0, 0))
+
+    return #p1 in v; // Bad: outside of class
+}
+

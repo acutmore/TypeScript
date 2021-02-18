@@ -437,6 +437,8 @@ namespace ts {
             createMergeDeclarationMarker,
             createSyntheticReferenceExpression,
             updateSyntheticReferenceExpression,
+            createPrivateIdentifierInInExpression,
+            updatePrivateIdentifierInInExpression,
             cloneNode,
 
             // Lazily load factory methods for common operator factories and utilities
@@ -3056,6 +3058,30 @@ namespace ts {
         function updateMetaProperty(node: MetaProperty, name: Identifier) {
             return node.name !== name
                 ? update(createMetaProperty(node.keywordToken, name), node)
+                : node;
+        }
+
+        // @api
+        function createPrivateIdentifierInInExpression(name: PrivateIdentifier, expression: Expression) {
+            const node = createBaseExpression<PrivateIdentifierInInExpression>(SyntaxKind.PrivateIdentifierInInExpression);
+            node.name = name;
+            node.expression = expression;
+            node.transformFlags |=
+                propagateChildFlags(node.name) |
+                propagateChildFlags(node.expression) |
+                TransformFlags.ContainsESNext;
+            return node;
+        }
+
+        // @api
+        function updatePrivateIdentifierInInExpression(
+            node: PrivateIdentifierInInExpression,
+            name: PrivateIdentifier,
+            expression: Expression
+        ): PrivateIdentifierInInExpression {
+            return node.name !== name
+                || node.expression !== expression
+                ? update(createPrivateIdentifierInInExpression(name, expression), node)
                 : node;
         }
 

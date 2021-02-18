@@ -269,6 +269,7 @@ namespace ts {
         NonNullExpression,
         MetaProperty,
         SyntheticExpression,
+        PrivateIdentifierInInExpression,
 
         // Misc
         TemplateSpan,
@@ -2304,6 +2305,12 @@ namespace ts {
 
     // see: https://tc39.github.io/ecma262/#prod-SuperProperty
     export type SuperProperty = SuperPropertyAccessExpression | SuperElementAccessExpression;
+
+    export interface PrivateIdentifierInInExpression extends Expression {
+        readonly kind: SyntaxKind.PrivateIdentifierInInExpression;
+        readonly name: PrivateIdentifier;
+        readonly expression: Expression;
+    }
 
     export interface CallExpression extends LeftHandSideExpression, Declaration {
         readonly kind: SyntaxKind.CallExpression;
@@ -7088,6 +7095,8 @@ namespace ts {
         updateNonNullChain(node: NonNullChain, expression: Expression): NonNullChain;
         createMetaProperty(keywordToken: MetaProperty["keywordToken"], name: Identifier): MetaProperty;
         updateMetaProperty(node: MetaProperty, name: Identifier): MetaProperty;
+        createPrivateIdentifierInInExpression(name: PrivateIdentifier, expression: Expression): PrivateIdentifierInInExpression;
+        updatePrivateIdentifierInInExpression(node: PrivateIdentifierInInExpression, name: PrivateIdentifier, expression: Expression): PrivateIdentifierInInExpression;
 
         //
         // Misc

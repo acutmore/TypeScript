@@ -1,0 +1,68 @@
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(18,13): error TS1005: 'in' expected.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(21,14): error TS2304: Cannot find name '#p1'.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(21,14): error TS18016: Private identifiers are not allowed outside class bodies.
+
+
+==== tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts (3 errors) ====
+    // TODO(aclaymore) split up into seperate cases
+    
+    class Foo {
+        #p1 = 1;
+        m1(v: {}) {
+            #p1 in v; // Good
+        }
+        m2(v: any) {
+            #p1 in v.p1.p2; // Good
+        }
+        m3(v: unknown) {
+            #p1 in v; // Bad - RHS of in must be object type or any
+        }
+        m4(v: any) {
+            #p2 in v; // Bad - Invalid private id
+        }
+        m5(v: any) {
+            (#p1) in v; // Bad - private id is not an expression on it's own
+                
+!!! error TS1005: 'in' expected.
+        }
+        m6(v: any) {
+            for (#p1 in v) { /* no-op */ } // Bad - 'in' not allowed
+                 ~~~
+!!! error TS2304: Cannot find name '#p1'.
+                 ~~~
+!!! error TS18016: Private identifiers are not allowed outside class bodies.
+        }
+        m7(v: any) {
+            for (let x in #p1 in v as any) { /* no-op */ } // Good - weird but valid
+        }
+        m8(v: any) {
+            for (let x in #p1 in v) { /* no-op */ } // Bad - rhs of in should be a object/any
+        }
+        m9(v: any) {
+            // '==' has lower precedence than 'in'
+            // '<'  has same prededence than 'in'
+            // '<<' has higher prededence than 'in'
+    
+            v == #p1 in v == v; // Good precidence: ((v == (#p1 in v)) == v)
+    
+            v << #p1 in v << v; // Good precidence: (v << (#p1 in (v << v)))
+    
+            v << #p1 in v == v; // Good precidence: ((v << (#p1 in v)) == v)
+    
+            v == #p1 in v < v; // Good precidence: (v == ((#p1 in v) < v))
+    
+            #p1 in v && #p1 in v; // Good precidence: ((#p1 in v) && (#p1 in v))
+        }
+        m10() {
+            class Bar {
+                m10(v: any) {
+                    #p1 in v; // Good: access parent class
+                }
+            }
+        }
+    }
+    
+    function error(v: Foo) {
+        return #p1 in v; // Bad: outside of class
+    }
+    

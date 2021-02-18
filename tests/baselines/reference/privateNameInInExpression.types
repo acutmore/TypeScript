@@ -1,0 +1,122 @@
+=== tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts ===
+// TODO(aclaymore) split up into seperate cases
+
+class Foo {
+>Foo : Foo
+
+    #p1 = 1;
+>#p1 : number
+>1 : 1
+
+    m1(v: {}) {
+>m1 : (v: {}) => void
+>v : {}
+
+        #p1 in v; // Good
+    }
+    m2(v: any) {
+>m2 : (v: any) => void
+>v : any
+
+        #p1 in v.p1.p2; // Good
+    }
+    m3(v: unknown) {
+>m3 : (v: unknown) => void
+>v : unknown
+
+        #p1 in v; // Bad - RHS of in must be object type or any
+    }
+    m4(v: any) {
+>m4 : (v: any) => void
+>v : any
+
+        #p2 in v; // Bad - Invalid private id
+    }
+    m5(v: any) {
+>m5 : (v: any) => void
+>v : any
+
+        (#p1) in v; // Bad - private id is not an expression on it's own
+>(#p1) in v : boolean
+>(#p1) : any
+>v : any
+    }
+    m6(v: any) {
+>m6 : (v: any) => void
+>v : any
+
+        for (#p1 in v) { /* no-op */ } // Bad - 'in' not allowed
+>#p1 : any
+>v : any
+    }
+    m7(v: any) {
+>m7 : (v: any) => void
+>v : any
+
+        for (let x in #p1 in v as any) { /* no-op */ } // Good - weird but valid
+>x : string
+>#p1 in v as any : any
+    }
+    m8(v: any) {
+>m8 : (v: any) => void
+>v : any
+
+        for (let x in #p1 in v) { /* no-op */ } // Bad - rhs of in should be a object/any
+>x : string
+    }
+    m9(v: any) {
+>m9 : (v: any) => void
+>v : any
+
+        // '==' has lower precedence than 'in'
+        // '<'  has same prededence than 'in'
+        // '<<' has higher prededence than 'in'
+
+        v == #p1 in v == v; // Good precidence: ((v == (#p1 in v)) == v)
+>v == #p1 in v == v : boolean
+>v == #p1 in v : boolean
+>v : any
+>v : any
+
+        v << #p1 in v << v; // Good precidence: (v << (#p1 in (v << v)))
+>v << #p1 in v << v : number
+>v : any
+
+        v << #p1 in v == v; // Good precidence: ((v << (#p1 in v)) == v)
+>v << #p1 in v == v : boolean
+>v << #p1 in v : number
+>v : any
+>v : any
+
+        v == #p1 in v < v; // Good precidence: (v == ((#p1 in v) < v))
+>v == #p1 in v < v : boolean
+>v : any
+>#p1 in v < v : boolean
+>v : any
+
+        #p1 in v && #p1 in v; // Good precidence: ((#p1 in v) && (#p1 in v))
+>#p1 in v && #p1 in v : any
+    }
+    m10() {
+>m10 : () => void
+
+        class Bar {
+>Bar : Bar
+
+            m10(v: any) {
+>m10 : (v: any) => void
+>v : any
+
+                #p1 in v; // Good: access parent class
+            }
+        }
+    }
+}
+
+function error(v: Foo) {
+>error : (v: Foo) => any
+>v : Foo
+
+    return #p1 in v; // Bad: outside of class
+}
+

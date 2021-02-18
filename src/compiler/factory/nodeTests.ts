@@ -444,6 +444,10 @@ namespace ts {
         return node.kind === SyntaxKind.CommaListExpression;
     }
 
+    export function isPrivateIdentifierInInExpression(node: Node): node is PrivateIdentifierInInExpression {
+        return node.kind === SyntaxKind.PrivateIdentifierInInExpression;
+    }
+
     // Misc
 
     export function isTemplateSpan(node: Node): node is TemplateSpan {

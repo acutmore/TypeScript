@@ -4430,9 +4430,27 @@ namespace ts {
             );
         }
 
+        function parsePrivateIdentifierInInExpression(pos: number): Expression {
+            Debug.assert(token() === SyntaxKind.PrivateIdentifier, "parsePrivateIdentifierInInExpression should only have been called if we had a privateIdentifier");
+            Debug.assert(inDisallowInContext() === false, "parsePrivateIdentifierInInExpression should only have been called if 'in' is allowed");
+            const id = parsePrivateIdentifier();
+            if (token() !== SyntaxKind.InKeyword) {
+                // TODO(aclaymore) use better error
+                return createMissingNode(SyntaxKind.InKeyword, /*reportAtCurrentPosition*/ true, Diagnostics._0_expected, tokenToString(SyntaxKind.InKeyword));
+            }
+            nextToken();
+            // TODO(aclaymore): LHS can be a binary expression of higher precedence
+            // const exp = parseUnaryExpressionOrHigher();
+            const exp = parseBinaryExpressionOrHigher(OperatorPrecedence.Relational);
+            return finishNode(factory.createPrivateIdentifierInInExpression(id, exp), pos);
+        }
+
         function parseBinaryExpressionOrHigher(precedence: OperatorPrecedence): Expression {
             const pos = getNodePos();
-            const leftOperand = parseUnaryExpressionOrHigher();
+            const tryPrivateIdentifierInIn = token() === SyntaxKind.PrivateIdentifier && !inDisallowInContext();
+            const leftOperand = tryPrivateIdentifierInIn
+                ? parsePrivateIdentifierInInExpression(pos)
+                : parseUnaryExpressionOrHigher();
             return parseBinaryExpressionRest(precedence, leftOperand, pos);
         }
 

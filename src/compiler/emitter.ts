@@ -1447,6 +1447,8 @@ namespace ts {
                     return emitPostfixUnaryExpression(<PostfixUnaryExpression>node);
                 case SyntaxKind.BinaryExpression:
                     return emitBinaryExpression(<BinaryExpression>node);
+                case SyntaxKind.PrivateIdentifierInInExpression:
+                    return emitPrivateIdentifierInInExpression(<PrivateIdentifierInInExpression>node);
                 case SyntaxKind.ConditionalExpression:
                     return emitConditionalExpression(<ConditionalExpression>node);
                 case SyntaxKind.TemplateExpression:
@@ -2552,6 +2554,7 @@ namespace ts {
                     state.declarationListContainerEndStack[state.stackIndex] = declarationListContainerEnd;
                     const emitComments = state.shouldEmitCommentsStack[state.stackIndex] = shouldEmitComments(node);
                     const emitSourceMaps = state.shouldEmitSourceMapsStack[state.stackIndex] = shouldEmitSourceMaps(node);
+                    writeToken(SyntaxKind.OpenParenToken, node.pos, writePunctuation); // TODO(aclaymore): remove - for debugging
                     beforeEmitWithContext(node, emitComments, emitSourceMaps);
                 }
                 else {
@@ -2591,6 +2594,7 @@ namespace ts {
                     const shouldEmitComments = state.shouldEmitCommentsStack[state.stackIndex];
                     const shouldEmitSourceMaps = state.shouldEmitSourceMapsStack[state.stackIndex];
                     afterEmitWithContext(node, shouldEmitComments, shouldEmitSourceMaps, savedContainerPos, savedContainerEnd, savedDeclarationListContainerEnd, savedPreserveSourceNewlines);
+                    writeToken(SyntaxKind.CloseParenToken, node.pos, writePunctuation); // TODO(aclaymore): remove - for debugging
                     state.stackIndex--;
                 }
             }
@@ -2603,6 +2607,17 @@ namespace ts {
 
                 emit(next);
             }
+        }
+
+        function emitPrivateIdentifierInInExpression(node: PrivateIdentifierInInExpression) {
+            // TODO(aclaymore) - emit better. Temp adding parenthesis for debugging
+            writeToken(SyntaxKind.OpenParenToken, node.pos, writePunctuation);
+            emit(node.name);
+            writeSpace();
+            writeToken(SyntaxKind.InKeyword, node.pos, writePunctuation);
+            writeSpace();
+            emit(node.expression);
+            writeToken(SyntaxKind.CloseParenToken, node.pos, writePunctuation);
         }
 
         function emitConditionalExpression(node: ConditionalExpression) {
