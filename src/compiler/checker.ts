@@ -23232,6 +23232,22 @@ namespace ts {
                 return type;
             }
 
+            function narrowTypeByPrivateIdentifierInInExpression(type: Type, expr: PrivateIdentifierInInExpression, assumeTrue: boolean): Type {
+                const target = getReferenceCandidate(expr.expression);
+                if (!isMatchingReference(reference, target)) {
+                    return type;
+                }
+
+                const privateId = expr.name;
+                const klass = lookupClassForPrivateIdentifierDeclaration(privateId);
+                if (klass === undefined) {
+                    return type;
+                }
+
+                const classTypeForPrivateField = getTypeOfSymbolAtLocation(getSymbolOfNode(klass), klass);
+                return getNarrowedType(type, classTypeForPrivateField, assumeTrue, isTypeDerivedFrom);
+            }
+
             function narrowTypeByOptionalChainContainment(type: Type, operator: SyntaxKind, value: Expression, assumeTrue: boolean): Type {
                 // We are in a branch of obj?.foo === value (or any one of the other equality operators). We narrow obj as follows:
                 // When operator is === and type of value excludes undefined, null and undefined is removed from type of obj in true branch.
@@ -23645,6 +23661,8 @@ namespace ts {
                         return narrowType(type, (<ParenthesizedExpression | NonNullExpression>expr).expression, assumeTrue);
                     case SyntaxKind.BinaryExpression:
                         return narrowTypeByBinaryExpression(type, <BinaryExpression>expr, assumeTrue);
+                    case SyntaxKind.PrivateIdentifierInInExpression:
+                        return narrowTypeByPrivateIdentifierInInExpression(type, <PrivateIdentifierInInExpression>expr, assumeTrue);
                     case SyntaxKind.PrefixUnaryExpression:
                         if ((<PrefixUnaryExpression>expr).operator === SyntaxKind.ExclamationToken) {
                             return narrowType(type, (<PrefixUnaryExpression>expr).operand, !assumeTrue);
@@ -26884,6 +26902,17 @@ namespace ts {
                 const prop = (symbol.members && symbol.members.get(name)) || (symbol.exports && symbol.exports.get(name));
                 if (prop) {
                     return prop;
+                }
+            }
+        }
+
+        function lookupClassForPrivateIdentifierDeclaration(id: PrivateIdentifier): ClassLikeDeclaration | undefined {
+            for (let containingClass = getContainingClass(id); !!containingClass; containingClass = getContainingClass(containingClass)) {
+                const { symbol } = containingClass;
+                const name = getSymbolNameForPrivateIdentifier(symbol, id.escapedText);
+                const prop = (symbol.members && symbol.members.get(name)) || (symbol.exports && symbol.exports.get(name));
+                if (prop) {
+                    return containingClass;
                 }
             }
         }
@@ -31056,6 +31085,11 @@ namespace ts {
                   isTypeAssignableToKind(leftType, TypeFlags.Index | TypeFlags.TemplateLiteral | TypeFlags.StringMapping | TypeFlags.TypeParameter))) {
                 error(left, Diagnostics.The_left_hand_side_of_an_in_expression_must_be_of_type_any_string_number_or_symbol);
             }
+            checkInExpressionRHS(right, rightType);
+            return booleanType;
+        }
+
+        function checkInExpressionRHS(right: Expression, rightType: Type) {
             const rightTypeConstraint = getConstraintOfType(rightType);
             if (!allTypesAssignableToKind(rightType, TypeFlags.NonPrimitive | TypeFlags.InstantiableNonPrimitive) ||
                 rightTypeConstraint && (
@@ -31065,7 +31099,6 @@ namespace ts {
             ) {
                 error(right, Diagnostics.The_right_hand_side_of_an_in_expression_must_not_be_a_primitive);
             }
-            return booleanType;
         }
 
         function checkObjectLiteralAssignment(node: ObjectLiteralExpression, sourceType: Type, rightIsThis?: boolean): Type {
@@ -31300,6 +31333,26 @@ namespace ts {
 
         function isTypeEqualityComparableTo(source: Type, target: Type) {
             return (target.flags & TypeFlags.Nullable) !== 0 || isTypeComparableTo(source, target);
+        }
+
+        function checkPrivateIdentifierInInExpression(node: PrivateIdentifierInInExpression, checkMode?: CheckMode) {
+            const privateId = node.name;
+            const lexicallyScopedSymbol = lookupSymbolForPrivateIdentifierDeclaration(privateId.escapedText, privateId);
+            if (lexicallyScopedSymbol === undefined) {
+                // TODO(aclaymore): use better error message - we might be in a class but with no matching privateField
+                error(privateId, Diagnostics.Private_identifiers_are_not_allowed_outside_class_bodies);
+                return anyType;
+            }
+
+            const exp = node.expression;
+            let rightType = checkExpression(exp, checkMode);
+            if (rightType === silentNeverType) {
+                return silentNeverType;
+            }
+            rightType = checkNonNullType(rightType, exp);
+            // TODO(aclaymore): Do RHS rules matching 'in' rules? (e.g. throw on null)
+            checkInExpressionRHS(exp, rightType);
+            return booleanType;
         }
 
         function createCheckBinaryExpression() {
@@ -32483,6 +32536,8 @@ namespace ts {
                     return checkPostfixUnaryExpression(<PostfixUnaryExpression>node);
                 case SyntaxKind.BinaryExpression:
                     return checkBinaryExpression(<BinaryExpression>node, checkMode);
+                case SyntaxKind.PrivateIdentifierInInExpression:
+                    return checkPrivateIdentifierInInExpression(<PrivateIdentifierInInExpression>node, checkMode);
                 case SyntaxKind.ConditionalExpression:
                     return checkConditionalExpression(<ConditionalExpression>node, checkMode);
                 case SyntaxKind.SpreadElement:

@@ -1,44 +1,55 @@
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(18,13): error TS1005: 'in' expected.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(21,14): error TS2304: Cannot find name '#p1'.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(21,14): error TS18016: Private identifiers are not allowed outside class bodies.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(14,26): error TS2571: Object is of type 'unknown'.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(16,19): error TS18016: Private identifiers are not allowed outside class bodies.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(18,23): error TS1005: 'in' expected.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(20,14): error TS2304: Cannot find name '#p1'.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(20,14): error TS18016: Private identifiers are not allowed outside class bodies.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(22,23): error TS2407: The right-hand side of a 'for...in' statement must be of type 'any', an object type or a type parameter, but here has type 'boolean'.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(34,14): error TS2363: The right-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(34,21): error TS2361: The right-hand side of an 'in' expression must not be a primitive.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(36,14): error TS2363: The right-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(62,12): error TS18016: Private identifiers are not allowed outside class bodies.
 
 
-==== tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts (3 errors) ====
+==== tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts (10 errors) ====
     // TODO(aclaymore) split up into seperate cases
     
     class Foo {
         #p1 = 1;
-        m1(v: {}) {
-            #p1 in v; // Good
-        }
-        m2(v: any) {
-            #p1 in v.p1.p2; // Good
-        }
-        m3(v: unknown) {
-            #p1 in v; // Bad - RHS of in must be object type or any
-        }
-        m4(v: any) {
-            #p2 in v; // Bad - Invalid private id
-        }
-        m5(v: any) {
-            (#p1) in v; // Bad - private id is not an expression on it's own
-                
+        basics(v: any) {
+            const a = #p1 in v; // Good - a is boolean
+    
+            const b = #p1 in v.p1.p2; // Good - b is boolean
+    
+            const c = #p1 in (v as {}); // Good - c is boolean
+    
+            const d = #p1 in (v as Foo); // Good d is boolean (not true)
+    
+            const e = #p1 in (v as unknown); // Bad - RHS of in must be object type or any
+                             ~~~~~~~~~~~~~~
+!!! error TS2571: Object is of type 'unknown'.
+    
+            const f = #p2 in v; // Bad - Invalid privateID
+                      ~~~
+!!! error TS18016: Private identifiers are not allowed outside class bodies.
+    
+            const g = (#p1) in v; // Bad - private id is not an expression on it's own
+                          
 !!! error TS1005: 'in' expected.
-        }
-        m6(v: any) {
+    
             for (#p1 in v) { /* no-op */ } // Bad - 'in' not allowed
                  ~~~
 !!! error TS2304: Cannot find name '#p1'.
                  ~~~
 !!! error TS18016: Private identifiers are not allowed outside class bodies.
-        }
-        m7(v: any) {
-            for (let x in #p1 in v as any) { /* no-op */ } // Good - weird but valid
-        }
-        m8(v: any) {
+    
             for (let x in #p1 in v) { /* no-op */ } // Bad - rhs of in should be a object/any
+                          ~~~~~~~~
+!!! error TS2407: The right-hand side of a 'for...in' statement must be of type 'any', an object type or a type parameter, but here has type 'boolean'.
+    
+            for (let x in #p1 in v as any) { /* no-op */ } // Good - weird but valid
+    
         }
-        m9(v: any) {
+        precedence(v: any) {
             // '==' has lower precedence than 'in'
             // '<'  has same prededence than 'in'
             // '<<' has higher prededence than 'in'
@@ -46,23 +57,41 @@ tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.t
             v == #p1 in v == v; // Good precidence: ((v == (#p1 in v)) == v)
     
             v << #p1 in v << v; // Good precidence: (v << (#p1 in (v << v)))
+                 ~~~~~~~~~~~~~
+!!! error TS2363: The right-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+                        ~~~~~~
+!!! error TS2361: The right-hand side of an 'in' expression must not be a primitive.
     
             v << #p1 in v == v; // Good precidence: ((v << (#p1 in v)) == v)
+                 ~~~~~~~~
+!!! error TS2363: The right-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
     
             v == #p1 in v < v; // Good precidence: (v == ((#p1 in v) < v))
     
             #p1 in v && #p1 in v; // Good precidence: ((#p1 in v) && (#p1 in v))
         }
-        m10() {
-            class Bar {
-                m10(v: any) {
-                    #p1 in v; // Good: access parent class
+        flow(v: unknown) {
+            if (typeof v === 'object' && v !== null) {
+                if (#p1 in v) {
+                    const y1 = v; // good y1 is typeof Foo
+                } else {
+                    const y2 = v; // y2 is not typeof Foo
+                }
+            }
+    
+            class Nested {
+                m(v: any) {
+                    if (#p1 in v) {
+                       const y1 = v; // Good y1 if typeof Foo
+                    }
                 }
             }
         }
     }
     
     function error(v: Foo) {
-        return #p1 in v; // Bad: outside of class
+        return #p1 in v; // Bad - outside of class
+               ~~~
+!!! error TS18016: Private identifiers are not allowed outside class bodies.
     }
     

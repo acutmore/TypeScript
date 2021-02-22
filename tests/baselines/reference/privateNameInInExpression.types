@@ -8,64 +8,66 @@ class Foo {
 >#p1 : number
 >1 : 1
 
-    m1(v: {}) {
->m1 : (v: {}) => void
->v : {}
-
-        #p1 in v; // Good
-    }
-    m2(v: any) {
->m2 : (v: any) => void
+    basics(v: any) {
+>basics : (v: any) => void
 >v : any
 
-        #p1 in v.p1.p2; // Good
-    }
-    m3(v: unknown) {
->m3 : (v: unknown) => void
->v : unknown
-
-        #p1 in v; // Bad - RHS of in must be object type or any
-    }
-    m4(v: any) {
->m4 : (v: any) => void
+        const a = #p1 in v; // Good - a is boolean
+>a : boolean
 >v : any
 
-        #p2 in v; // Bad - Invalid private id
-    }
-    m5(v: any) {
->m5 : (v: any) => void
+        const b = #p1 in v.p1.p2; // Good - b is boolean
+>b : boolean
+>v.p1.p2 : any
+>v.p1 : any
+>v : any
+>p1 : any
+>p2 : any
+
+        const c = #p1 in (v as {}); // Good - c is boolean
+>c : boolean
+>(v as {}) : {}
+>v as {} : {}
 >v : any
 
-        (#p1) in v; // Bad - private id is not an expression on it's own
+        const d = #p1 in (v as Foo); // Good d is boolean (not true)
+>d : boolean
+>(v as Foo) : Foo
+>v as Foo : Foo
+>v : any
+
+        const e = #p1 in (v as unknown); // Bad - RHS of in must be object type or any
+>e : boolean
+>(v as unknown) : unknown
+>v as unknown : unknown
+>v : any
+
+        const f = #p2 in v; // Bad - Invalid privateID
+>f : any
+>v : any
+
+        const g = (#p1) in v; // Bad - private id is not an expression on it's own
+>g : boolean
 >(#p1) in v : boolean
 >(#p1) : any
->v : any
-    }
-    m6(v: any) {
->m6 : (v: any) => void
 >v : any
 
         for (#p1 in v) { /* no-op */ } // Bad - 'in' not allowed
 >#p1 : any
 >v : any
-    }
-    m7(v: any) {
->m7 : (v: any) => void
+
+        for (let x in #p1 in v) { /* no-op */ } // Bad - rhs of in should be a object/any
+>x : string
 >v : any
 
         for (let x in #p1 in v as any) { /* no-op */ } // Good - weird but valid
 >x : string
 >#p1 in v as any : any
-    }
-    m8(v: any) {
->m8 : (v: any) => void
 >v : any
 
-        for (let x in #p1 in v) { /* no-op */ } // Bad - rhs of in should be a object/any
->x : string
     }
-    m9(v: any) {
->m9 : (v: any) => void
+    precedence(v: any) {
+>precedence : (v: any) => void
 >v : any
 
         // '==' has lower precedence than 'in'
@@ -77,14 +79,19 @@ class Foo {
 >v == #p1 in v : boolean
 >v : any
 >v : any
+>v : any
 
         v << #p1 in v << v; // Good precidence: (v << (#p1 in (v << v)))
 >v << #p1 in v << v : number
+>v : any
+>v << v : number
+>v : any
 >v : any
 
         v << #p1 in v == v; // Good precidence: ((v << (#p1 in v)) == v)
 >v << #p1 in v == v : boolean
 >v << #p1 in v : number
+>v : any
 >v : any
 >v : any
 
@@ -93,21 +100,55 @@ class Foo {
 >v : any
 >#p1 in v < v : boolean
 >v : any
-
-        #p1 in v && #p1 in v; // Good precidence: ((#p1 in v) && (#p1 in v))
->#p1 in v && #p1 in v : any
-    }
-    m10() {
->m10 : () => void
-
-        class Bar {
->Bar : Bar
-
-            m10(v: any) {
->m10 : (v: any) => void
 >v : any
 
-                #p1 in v; // Good: access parent class
+        #p1 in v && #p1 in v; // Good precidence: ((#p1 in v) && (#p1 in v))
+>#p1 in v && #p1 in v : boolean
+>v : any
+>v : any
+    }
+    flow(v: unknown) {
+>flow : (v: unknown) => void
+>v : unknown
+
+        if (typeof v === 'object' && v !== null) {
+>typeof v === 'object' && v !== null : boolean
+>typeof v === 'object' : boolean
+>typeof v : "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function"
+>v : unknown
+>'object' : "object"
+>v !== null : boolean
+>v : object | null
+>null : null
+
+            if (#p1 in v) {
+>v : any
+
+                const y1 = v; // good y1 is typeof Foo
+>y1 : typeof Foo
+>v : typeof Foo
+
+            } else {
+                const y2 = v; // y2 is not typeof Foo
+>y2 : object
+>v : object
+            }
+        }
+
+        class Nested {
+>Nested : Nested
+
+            m(v: any) {
+>m : (v: any) => void
+>v : any
+
+                if (#p1 in v) {
+>v : any
+
+                   const y1 = v; // Good y1 if typeof Foo
+>y1 : typeof Foo
+>v : typeof Foo
+                }
             }
         }
     }
@@ -117,6 +158,7 @@ function error(v: Foo) {
 >error : (v: Foo) => any
 >v : Foo
 
-    return #p1 in v; // Bad: outside of class
+    return #p1 in v; // Bad - outside of class
+>v : any
 }
 

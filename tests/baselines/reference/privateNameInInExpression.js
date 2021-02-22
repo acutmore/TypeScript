@@ -3,31 +3,29 @@
 
 class Foo {
     #p1 = 1;
-    m1(v: {}) {
-        #p1 in v; // Good
-    }
-    m2(v: any) {
-        #p1 in v.p1.p2; // Good
-    }
-    m3(v: unknown) {
-        #p1 in v; // Bad - RHS of in must be object type or any
-    }
-    m4(v: any) {
-        #p2 in v; // Bad - Invalid private id
-    }
-    m5(v: any) {
-        (#p1) in v; // Bad - private id is not an expression on it's own
-    }
-    m6(v: any) {
+    basics(v: any) {
+        const a = #p1 in v; // Good - a is boolean
+
+        const b = #p1 in v.p1.p2; // Good - b is boolean
+
+        const c = #p1 in (v as {}); // Good - c is boolean
+
+        const d = #p1 in (v as Foo); // Good d is boolean (not true)
+
+        const e = #p1 in (v as unknown); // Bad - RHS of in must be object type or any
+
+        const f = #p2 in v; // Bad - Invalid privateID
+
+        const g = (#p1) in v; // Bad - private id is not an expression on it's own
+
         for (#p1 in v) { /* no-op */ } // Bad - 'in' not allowed
-    }
-    m7(v: any) {
-        for (let x in #p1 in v as any) { /* no-op */ } // Good - weird but valid
-    }
-    m8(v: any) {
+
         for (let x in #p1 in v) { /* no-op */ } // Bad - rhs of in should be a object/any
+
+        for (let x in #p1 in v as any) { /* no-op */ } // Good - weird but valid
+
     }
-    m9(v: any) {
+    precedence(v: any) {
         // '==' has lower precedence than 'in'
         // '<'  has same prededence than 'in'
         // '<<' has higher prededence than 'in'
@@ -42,17 +40,27 @@ class Foo {
 
         #p1 in v && #p1 in v; // Good precidence: ((#p1 in v) && (#p1 in v))
     }
-    m10() {
-        class Bar {
-            m10(v: any) {
-                #p1 in v; // Good: access parent class
+    flow(v: unknown) {
+        if (typeof v === 'object' && v !== null) {
+            if (#p1 in v) {
+                const y1 = v; // good y1 is typeof Foo
+            } else {
+                const y2 = v; // y2 is not typeof Foo
+            }
+        }
+
+        class Nested {
+            m(v: any) {
+                if (#p1 in v) {
+                   const y1 = v; // Good y1 if typeof Foo
+                }
             }
         }
     }
 }
 
 function error(v: Foo) {
-    return #p1 in v; // Bad: outside of class
+    return #p1 in v; // Bad - outside of class
 }
 
 
@@ -64,31 +72,19 @@ class Foo {
         (this.#p1 = 1);
     }
     #p1;
-    m1(v) {
-        (#p1 in v); // Good
-    }
-    m2(v) {
-        (#p1 in v.p1.p2); // Good
-    }
-    m3(v) {
-        (#p1 in v); // Bad - RHS of in must be object type or any
-    }
-    m4(v) {
-        (#p2 in v); // Bad - Invalid private id
-    }
-    m5(v) {
-        (() in v); // Bad - private id is not an expression on it's own
-    }
-    m6(v) {
+    basics(v) {
+        const a = (#p1 in v); // Good - a is boolean
+        const b = (#p1 in v.p1.p2); // Good - b is boolean
+        const c = (#p1 in (v as {})); // Good - c is boolean
+        const d = (#p1 in (v as Foo)); // Good d is boolean (not true)
+        const e = (#p1 in (v as unknown)); // Bad - RHS of in must be object type or any
+        const f = (#p2 in v); // Bad - Invalid privateID
+        const g = (() in v); // Bad - private id is not an expression on it's own
         for (#p1 in v) { /* no-op */ } // Bad - 'in' not allowed
-    }
-    m7(v) {
+        for (let x in (#p1 in v)) { /* no-op */ } // Bad - rhs of in should be a object/any
         for (let x in (#p1 in v)) { /* no-op */ } // Good - weird but valid
     }
-    m8(v) {
-        for (let x in (#p1 in v)) { /* no-op */ } // Bad - rhs of in should be a object/any
-    }
-    m9(v) {
+    precedence(v) {
         // '==' has lower precedence than 'in'
         // '<'  has same prededence than 'in'
         // '<<' has higher prededence than 'in'
@@ -98,14 +94,24 @@ class Foo {
         (v == ((#p1 in v) < v)); // Good precidence: (v == ((#p1 in v) < v))
         ((#p1 in v) && (#p1 in v)); // Good precidence: ((#p1 in v) && (#p1 in v))
     }
-    m10() {
-        class Bar {
-            m10(v) {
-                (#p1 in v); // Good: access parent class
+    flow(v) {
+        if (((typeof v === 'object') && (v !== null))) {
+            if ((#p1 in v)) {
+                const y1 = v; // good y1 is typeof Foo
+            }
+            else {
+                const y2 = v; // y2 is not typeof Foo
+            }
+        }
+        class Nested {
+            m(v) {
+                if ((#p1 in v)) {
+                    const y1 = v; // Good y1 if typeof Foo
+                }
             }
         }
     }
 }
 function error(v) {
-    return (#p1 in v); // Bad: outside of class
+    return (#p1 in v); // Bad - outside of class
 }

@@ -878,6 +878,8 @@ namespace ts {
                     return (<PrefixUnaryExpression>expr).operator === SyntaxKind.ExclamationToken && isNarrowingExpression((<PrefixUnaryExpression>expr).operand);
                 case SyntaxKind.TypeOfExpression:
                     return isNarrowingExpression((<TypeOfExpression>expr).expression);
+                case SyntaxKind.PrivateIdentifierInInExpression:
+                    return isNarrowingExpression((<PrivateIdentifierInInExpression>expr).expression);
             }
             return false;
         }

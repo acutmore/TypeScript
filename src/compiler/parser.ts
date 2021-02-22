@@ -442,6 +442,9 @@ namespace ts {
                 return visitNodes(cbNode, cbNodes, node.decorators);
             case SyntaxKind.CommaListExpression:
                 return visitNodes(cbNode, cbNodes, (<CommaListExpression>node).elements);
+            case SyntaxKind.PrivateIdentifierInInExpression:
+                return visitNode(cbNode, (<PrivateIdentifierInInExpression>node).name) ||
+                    visitNode(cbNode, (<PrivateIdentifierInInExpression>node).expression);
 
             case SyntaxKind.JsxElement:
                 return visitNode(cbNode, (<JsxElement>node).openingElement) ||
@@ -4439,8 +4442,7 @@ namespace ts {
                 return createMissingNode(SyntaxKind.InKeyword, /*reportAtCurrentPosition*/ true, Diagnostics._0_expected, tokenToString(SyntaxKind.InKeyword));
             }
             nextToken();
-            // TODO(aclaymore): LHS can be a binary expression of higher precedence
-            // const exp = parseUnaryExpressionOrHigher();
+            // TODO(aclaymore) verify precedence is correct
             const exp = parseBinaryExpressionOrHigher(OperatorPrecedence.Relational);
             return finishNode(factory.createPrivateIdentifierInInExpression(id, exp), pos);
         }
