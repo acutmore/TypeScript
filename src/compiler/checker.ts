@@ -23244,8 +23244,12 @@ namespace ts {
                     return type;
                 }
 
-                const classTypeForPrivateField = getTypeOfSymbolAtLocation(getSymbolOfNode(klass), klass);
-                return getNarrowedType(type, classTypeForPrivateField, assumeTrue, isTypeDerivedFrom);
+                const classType = <InterfaceType>getTypeOfSymbolAtLocation(getSymbolOfNode(klass), klass);
+                const ctorSigs = getSignaturesOfType(classType, SignatureKind.Construct);
+                // TODO(aclaymore): verify assertion is valid
+                Debug.assert(ctorSigs.length > 0, "narrowTypeByPrivateIdentifierInInExpression should always find the class signature");
+                const instanceType = getReturnTypeOfSignature(ctorSigs[0]);
+                return getNarrowedType(type, instanceType, assumeTrue, isTypeSubtypeOf);
             }
 
             function narrowTypeByOptionalChainContainment(type: Type, operator: SyntaxKind, value: Expression, assumeTrue: boolean): Type {

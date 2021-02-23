@@ -125,8 +125,8 @@ class Foo {
 >v : any
 
                 const y1 = v; // good y1 is typeof Foo
->y1 : typeof Foo
->v : typeof Foo
+>y1 : Foo
+>v : Foo
 
             } else {
                 const y2 = v; // y2 is not typeof Foo
@@ -146,8 +146,8 @@ class Foo {
 >v : any
 
                    const y1 = v; // Good y1 if typeof Foo
->y1 : typeof Foo
->v : typeof Foo
+>y1 : Foo
+>v : Foo
                 }
             }
         }
