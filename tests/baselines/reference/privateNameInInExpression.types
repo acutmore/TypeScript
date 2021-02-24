@@ -1,5 +1,5 @@
 === tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts ===
-// TODO(aclaymore) split up into seperate cases
+// TODO(aclaymore) split up into separate cases
 
 class Foo {
 >Foo : Foo
@@ -71,68 +71,115 @@ class Foo {
 >v : any
 
         // '==' has lower precedence than 'in'
-        // '<'  has same prededence than 'in'
-        // '<<' has higher prededence than 'in'
+        // '<'  has same precedence than 'in'
+        // '<<' has higher precedence than 'in'
 
-        v == #p1 in v == v; // Good precidence: ((v == (#p1 in v)) == v)
+        v == #p1 in v == v; // Good precedence: ((v == (#p1 in v)) == v)
 >v == #p1 in v == v : boolean
 >v == #p1 in v : boolean
 >v : any
 >v : any
 >v : any
 
-        v << #p1 in v << v; // Good precidence: (v << (#p1 in (v << v)))
+        v << #p1 in v << v; // Good precedence: (v << (#p1 in (v << v)))
 >v << #p1 in v << v : number
 >v : any
 >v << v : number
 >v : any
 >v : any
 
-        v << #p1 in v == v; // Good precidence: ((v << (#p1 in v)) == v)
+        v << #p1 in v == v; // Good precedence: ((v << (#p1 in v)) == v)
 >v << #p1 in v == v : boolean
 >v << #p1 in v : number
 >v : any
 >v : any
 >v : any
 
-        v == #p1 in v < v; // Good precidence: (v == ((#p1 in v) < v))
+        v == #p1 in v < v; // Good precedence: (v == ((#p1 in v) < v))
 >v == #p1 in v < v : boolean
 >v : any
 >#p1 in v < v : boolean
 >v : any
 >v : any
 
-        #p1 in v && #p1 in v; // Good precidence: ((#p1 in v) && (#p1 in v))
+        #p1 in v && #p1 in v; // Good precedence: ((#p1 in v) && (#p1 in v))
 >#p1 in v && #p1 in v : boolean
 >v : any
 >v : any
     }
-    flow(v: unknown) {
->flow : (v: unknown) => void
->v : unknown
+    flow(u: unknown, fb: Foo | Bar, fs: FooSub, b: Bar) {
+>flow : (u: unknown, fb: Foo | Bar, fs: FooSub, b: Bar) => void
+>u : unknown
+>fb : Foo | Bar
+>fs : FooSub
+>b : Bar
 
-        if (typeof v === 'object' && v !== null) {
->typeof v === 'object' && v !== null : boolean
->typeof v === 'object' : boolean
->typeof v : "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function"
->v : unknown
+        if (typeof u === 'object') {
+>typeof u === 'object' : boolean
+>typeof u : "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function"
+>u : unknown
 >'object' : "object"
->v !== null : boolean
->v : object | null
->null : null
 
-            if (#p1 in v) {
->v : any
+            if (#p1 in u) {
+>u : any
 
-                const y1 = v; // good y1 is typeof Foo
->y1 : Foo
->v : Foo
+                u; // good u is Foo
+>u : Foo
 
             } else {
-                const y2 = v; // y2 is not typeof Foo
->y2 : object
->v : object
+                u; // good u is object | null
+>u : object | null
             }
+
+            if (u !== null) {
+>u !== null : boolean
+>u : object | null
+>null : null
+
+                if (#p1 in u) {
+>u : any
+
+                    u; // good u is Foo
+>u : Foo
+
+                } else {
+                    u; // good u is object
+>u : object
+                }
+            }
+        }
+
+        if (#p1 in fb) {
+>fb : any
+
+            fb; // good fb is Foo
+>fb : Foo
+
+        } else {
+            fb; // good fb is Bar
+>fb : Bar
+        }
+
+        if (#p1 in fs) {
+>fs : any
+
+            fs; // good fb is Foo (or FooSub?)
+>fs : Foo
+
+        } else {
+            fs; // good fs is never
+>fs : never
+        }
+
+        if (#p1 in b) {
+>b : any
+
+            b; // good b is 'Bar & Foo'
+>b : Bar & Foo
+
+        } else {
+            b; // good b is Bar
+>b : Bar
         }
 
         class Nested {
@@ -145,14 +192,22 @@ class Foo {
                 if (#p1 in v) {
 >v : any
 
-                   const y1 = v; // Good y1 if typeof Foo
->y1 : Foo
+                    v; // good v is Foo
 >v : Foo
                 }
             }
         }
     }
 }
+
+class FooSub extends Foo { }
+>FooSub : FooSub
+>Foo : Foo
+
+class Bar { notFoo = true }
+>Bar : Bar
+>notFoo : boolean
+>true : true
 
 function error(v: Foo) {
 >error : (v: Foo) => any
@@ -161,4 +216,6 @@ function error(v: Foo) {
     return #p1 in v; // Bad - outside of class
 >v : any
 }
+
+export { }
 
