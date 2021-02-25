@@ -175,6 +175,8 @@ namespace ts {
                     return visitForStatement(node as ForStatement);
                 case SyntaxKind.TaggedTemplateExpression:
                     return visitTaggedTemplateExpression(node as TaggedTemplateExpression);
+                case SyntaxKind.PrivateIdentifierInInExpression:
+                    return visitPrivateIdentifierInInExpression(node as PrivateIdentifierInInExpression);
             }
             return visitEachChild(node, visitor, context);
         }
@@ -198,6 +200,36 @@ namespace ts {
                 return node;
             }
             return setOriginalNode(factory.createIdentifier(""), node);
+        }
+
+        /**
+         * Visits `#id in expr`
+         */
+        function visitPrivateIdentifierInInExpression(node: PrivateIdentifierInInExpression) {
+            if (!shouldTransformPrivateFields) {
+                return node;
+            }
+            const info = accessPrivateIdentifier(node.name);
+            if (info) {
+                const receiver = visitNode(node.expression, visitor, isExpression);
+
+                // TODO(aclaymore): Should this be abstracted into a factory function?
+                return setOriginalNode(
+                    factory.createCallExpression(
+                        factory.createPropertyAccessExpression(
+                            info.weakMapName,
+                            'has'
+                        ),
+                        /* typeArguments: */ undefined,
+                        [receiver]
+                    ),
+                    node
+                )
+            }
+
+            // Private name has not been declared. Subsequent transformers will handle this error
+            // TODO(aclaymore): confirm this is how we want to handle the error
+            return visitEachChild(node, visitor, context);
         }
 
         /**

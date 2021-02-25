@@ -1,0 +1,29 @@
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpressionTransform.ts(19,12): error TS18016: Private identifiers are not allowed outside class bodies.
+
+
+==== tests/cases/conformance/classes/members/privateNames/privateNameInInExpressionTransform.ts (1 errors) ====
+    // TODO(aclaymore) check where transform cases live
+    // TODO(aclaymore) add cases for static fields
+    
+    class Foo {
+        #p1 = 1;
+        check(v: any) {
+            #p1 in v; // expect `_p1.has(v)`
+        }
+    }
+    
+    class Bar {
+        #p1 = 1;
+        check(v: any) {
+            #p1 in v; // expect `_p1_1.has(v)`
+        }
+    }
+    
+    function error(v: Foo) {
+        return #p1 in v; // expect `in v`
+               ~~~
+!!! error TS18016: Private identifiers are not allowed outside class bodies.
+    }
+    
+    export { }
+    

@@ -1,0 +1,45 @@
+=== tests/cases/conformance/classes/members/privateNames/privateNameInInExpressionTransform.ts ===
+// TODO(aclaymore) check where transform cases live
+// TODO(aclaymore) add cases for static fields
+
+class Foo {
+>Foo : Symbol(Foo, Decl(privateNameInInExpressionTransform.ts, 0, 0))
+
+    #p1 = 1;
+>#p1 : Symbol(Foo.#p1, Decl(privateNameInInExpressionTransform.ts, 3, 11))
+
+    check(v: any) {
+>check : Symbol(Foo.check, Decl(privateNameInInExpressionTransform.ts, 4, 12))
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 5, 10))
+
+        #p1 in v; // expect `_p1.has(v)`
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 5, 10))
+    }
+}
+
+class Bar {
+>Bar : Symbol(Bar, Decl(privateNameInInExpressionTransform.ts, 8, 1))
+
+    #p1 = 1;
+>#p1 : Symbol(Bar.#p1, Decl(privateNameInInExpressionTransform.ts, 10, 11))
+
+    check(v: any) {
+>check : Symbol(Bar.check, Decl(privateNameInInExpressionTransform.ts, 11, 12))
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 12, 10))
+
+        #p1 in v; // expect `_p1_1.has(v)`
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 12, 10))
+    }
+}
+
+function error(v: Foo) {
+>error : Symbol(error, Decl(privateNameInInExpressionTransform.ts, 15, 1))
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 17, 15))
+>Foo : Symbol(Foo, Decl(privateNameInInExpressionTransform.ts, 0, 0))
+
+    return #p1 in v; // expect `in v`
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 17, 15))
+}
+
+export { }
+

@@ -1,0 +1,49 @@
+=== tests/cases/conformance/classes/members/privateNames/privateNameInInExpressionTransform.ts ===
+// TODO(aclaymore) check where transform cases live
+// TODO(aclaymore) add cases for static fields
+
+class Foo {
+>Foo : Foo
+
+    #p1 = 1;
+>#p1 : number
+>1 : 1
+
+    check(v: any) {
+>check : (v: any) => void
+>v : any
+
+        #p1 in v; // expect `_p1.has(v)`
+>#p1 in v : boolean
+>v : any
+    }
+}
+
+class Bar {
+>Bar : Bar
+
+    #p1 = 1;
+>#p1 : number
+>1 : 1
+
+    check(v: any) {
+>check : (v: any) => void
+>v : any
+
+        #p1 in v; // expect `_p1_1.has(v)`
+>#p1 in v : boolean
+>v : any
+    }
+}
+
+function error(v: Foo) {
+>error : (v: Foo) => any
+>v : Foo
+
+    return #p1 in v; // expect `in v`
+>#p1 in v : any
+>v : Foo
+}
+
+export { }
+

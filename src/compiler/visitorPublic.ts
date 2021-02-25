@@ -795,7 +795,7 @@ namespace ts {
 
             case SyntaxKind.PrivateIdentifierInInExpression:
                 return factory.updatePrivateIdentifierInInExpression(<PrivateIdentifierInInExpression>node,
-                    nodeVisitor((<PrivateIdentifierInInExpression>node).name, visitor, isPrivateIdentifier),
+                    nodeVisitor((<PrivateIdentifierInInExpression>node).name, visitor, isExpression),
                     nodeVisitor((<PrivateIdentifierInInExpression>node).expression, visitor, isExpression));
 
             case SyntaxKind.ConditionalExpression:
