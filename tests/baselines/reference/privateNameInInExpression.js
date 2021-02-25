@@ -107,9 +107,9 @@ class Foo {
     basics(v) {
         const a = (#p1 in v); // Good - a is boolean
         const b = (#p1 in v.p1.p2); // Good - b is boolean
-        const c = (#p1 in (v as {})); // Good - c is boolean
-        const d = (#p1 in (v as Foo)); // Good d is boolean (not true)
-        const e = (#p1 in (v as unknown)); // Bad - RHS of in must be object type or any
+        const c = (#p1 in v); // Good - c is boolean
+        const d = (#p1 in v); // Good d is boolean (not true)
+        const e = (#p1 in v); // Bad - RHS of in must be object type or any
         const f = (#p2 in v); // Bad - Invalid privateID
         const g = (() in v); // Bad - private id is not an expression on it's own
         for (#p1 in v) { /* no-op */ } // Bad - 'in' not allowed

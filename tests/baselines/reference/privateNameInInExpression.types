@@ -14,10 +14,12 @@ class Foo {
 
         const a = #p1 in v; // Good - a is boolean
 >a : boolean
+>#p1 in v : boolean
 >v : any
 
         const b = #p1 in v.p1.p2; // Good - b is boolean
 >b : boolean
+>#p1 in v.p1.p2 : boolean
 >v.p1.p2 : any
 >v.p1 : any
 >v : any
@@ -26,24 +28,28 @@ class Foo {
 
         const c = #p1 in (v as {}); // Good - c is boolean
 >c : boolean
+>#p1 in (v as {}) : boolean
 >(v as {}) : {}
 >v as {} : {}
 >v : any
 
         const d = #p1 in (v as Foo); // Good d is boolean (not true)
 >d : boolean
+>#p1 in (v as Foo) : boolean
 >(v as Foo) : Foo
 >v as Foo : Foo
 >v : any
 
         const e = #p1 in (v as unknown); // Bad - RHS of in must be object type or any
 >e : boolean
+>#p1 in (v as unknown) : boolean
 >(v as unknown) : unknown
 >v as unknown : unknown
 >v : any
 
         const f = #p2 in v; // Bad - Invalid privateID
 >f : any
+>#p2 in v : any
 >v : any
 
         const g = (#p1) in v; // Bad - private id is not an expression on it's own
@@ -58,11 +64,13 @@ class Foo {
 
         for (let x in #p1 in v) { /* no-op */ } // Bad - rhs of in should be a object/any
 >x : string
+>#p1 in v : boolean
 >v : any
 
         for (let x in #p1 in v as any) { /* no-op */ } // Good - weird but valid
 >x : string
 >#p1 in v as any : any
+>#p1 in v : boolean
 >v : any
 
     }
@@ -78,12 +86,14 @@ class Foo {
 >v == #p1 in v == v : boolean
 >v == #p1 in v : boolean
 >v : any
+>#p1 in v : boolean
 >v : any
 >v : any
 
         v << #p1 in v << v; // Good precedence: (v << (#p1 in (v << v)))
 >v << #p1 in v << v : number
 >v : any
+>#p1 in v << v : boolean
 >v << v : number
 >v : any
 >v : any
@@ -92,6 +102,7 @@ class Foo {
 >v << #p1 in v == v : boolean
 >v << #p1 in v : number
 >v : any
+>#p1 in v : boolean
 >v : any
 >v : any
 
@@ -99,13 +110,16 @@ class Foo {
 >v == #p1 in v < v : boolean
 >v : any
 >#p1 in v < v : boolean
+>#p1 in v : boolean
 >v : any
 >v : any
 
         #p1 in v && #p1 in v; // Good precedence: ((#p1 in v) && (#p1 in v))
 >#p1 in v && #p1 in v : boolean
+>#p1 in v : boolean
 >v : any
->v : any
+>#p1 in v : boolean
+>v : Foo
     }
     flow(u: unknown, fb: Foo | Bar, fs: FooSub, b: Bar) {
 >flow : (u: unknown, fb: Foo | Bar, fs: FooSub, b: Bar) => void
@@ -121,7 +135,8 @@ class Foo {
 >'object' : "object"
 
             if (#p1 in u) {
->u : any
+>#p1 in u : boolean
+>u : object | null
 
                 u; // good u is Foo
 >u : Foo
@@ -137,7 +152,8 @@ class Foo {
 >null : null
 
                 if (#p1 in u) {
->u : any
+>#p1 in u : boolean
+>u : object
 
                     u; // good u is Foo
 >u : Foo
@@ -150,7 +166,8 @@ class Foo {
         }
 
         if (#p1 in fb) {
->fb : any
+>#p1 in fb : boolean
+>fb : Foo | Bar
 
             fb; // good fb is Foo
 >fb : Foo
@@ -161,7 +178,8 @@ class Foo {
         }
 
         if (#p1 in fs) {
->fs : any
+>#p1 in fs : boolean
+>fs : FooSub
 
             fs; // good fb is Foo (or FooSub?)
 >fs : Foo
@@ -172,7 +190,8 @@ class Foo {
         }
 
         if (#p1 in b) {
->b : any
+>#p1 in b : boolean
+>b : Bar
 
             b; // good b is 'Bar & Foo'
 >b : Bar & Foo
@@ -190,6 +209,7 @@ class Foo {
 >v : any
 
                 if (#p1 in v) {
+>#p1 in v : boolean
 >v : any
 
                     v; // good v is Foo
@@ -214,7 +234,8 @@ function error(v: Foo) {
 >v : Foo
 
     return #p1 in v; // Bad - outside of class
->v : any
+>#p1 in v : any
+>v : Foo
 }
 
 export { }

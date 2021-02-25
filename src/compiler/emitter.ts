@@ -2612,7 +2612,7 @@ namespace ts {
         function emitPrivateIdentifierInInExpression(node: PrivateIdentifierInInExpression) {
             // TODO(aclaymore) - emit better. Temp adding parenthesis for debugging
             writeToken(SyntaxKind.OpenParenToken, node.pos, writePunctuation);
-            emit(node.name);
+            emitPrivateIdentifier(node.name);
             writeSpace();
             writeToken(SyntaxKind.InKeyword, node.pos, writePunctuation);
             writeSpace();

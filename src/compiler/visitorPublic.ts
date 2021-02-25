@@ -793,6 +793,11 @@ namespace ts {
                     nodeVisitor(node.operatorToken, tokenVisitor, isBinaryOperatorToken),
                     nodeVisitor(node.right, visitor, isExpression));
 
+            case SyntaxKind.PrivateIdentifierInInExpression:
+                return factory.updatePrivateIdentifierInInExpression(<PrivateIdentifierInInExpression>node,
+                    nodeVisitor((<PrivateIdentifierInInExpression>node).name, visitor, isPrivateIdentifier),
+                    nodeVisitor((<PrivateIdentifierInInExpression>node).expression, visitor, isExpression));
+
             case SyntaxKind.ConditionalExpression:
                 Debug.type<ConditionalExpression>(node);
                 return factory.updateConditionalExpression(node,

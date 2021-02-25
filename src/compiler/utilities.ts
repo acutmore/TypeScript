@@ -1884,6 +1884,7 @@ namespace ts {
             case SyntaxKind.YieldExpression:
             case SyntaxKind.AwaitExpression:
             case SyntaxKind.MetaProperty:
+            case SyntaxKind.PrivateIdentifierInInExpression:
                 return true;
             case SyntaxKind.QualifiedName:
                 while (node.parent.kind === SyntaxKind.QualifiedName) {
@@ -3578,6 +3579,9 @@ namespace ts {
                     default:
                         return getBinaryOperatorPrecedence(operatorKind);
                 }
+
+            case SyntaxKind.PrivateIdentifierInInExpression:
+                return OperatorPrecedence.Relational;
 
             // TODO: Should prefix `++` and `--` be moved to the `Update` precedence?
             case SyntaxKind.TypeAssertionExpression:
