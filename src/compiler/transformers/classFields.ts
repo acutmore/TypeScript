@@ -218,13 +218,13 @@ namespace ts {
                     factory.createCallExpression(
                         factory.createPropertyAccessExpression(
                             info.weakMapName,
-                            'has'
+                            "has"
                         ),
                         /* typeArguments: */ undefined,
                         [receiver]
                     ),
                     node
-                )
+                );
             }
 
             // Private name has not been declared. Subsequent transformers will handle this error
