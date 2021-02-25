@@ -40,7 +40,7 @@ class Foo {
 
         #p1 in v && #p1 in v; // Good precedence: ((#p1 in v) && (#p1 in v))
     }
-    flow(u: unknown, fb: Foo | Bar, fs: FooSub, b: Bar) {
+    flow(u: unknown, fb: Foo | Bar, fs: FooSub, b: Bar, fsb: FooSub | Bar) {
 
         if (typeof u === 'object') {
 
@@ -75,6 +75,12 @@ class Foo {
             b; // good b is 'Bar & Foo'
         } else {
             b; // good b is Bar
+        }
+
+        if (#p1 in fsb) {
+            fsb; // good fsb is FooSub
+        } else {
+            fsb; // good fsb is Bar
         }
 
         class Nested {
@@ -126,7 +132,7 @@ class Foo {
         (v == ((#p1 in v) < v)); // Good precedence: (v == ((#p1 in v) < v))
         ((#p1 in v) && (#p1 in v)); // Good precedence: ((#p1 in v) && (#p1 in v))
     }
-    flow(u, fb, fs, b) {
+    flow(u, fb, fs, b, fsb) {
         if ((typeof u === 'object')) {
             if ((#p1 in u)) {
                 u; // good u is Foo
@@ -160,6 +166,12 @@ class Foo {
         }
         else {
             b; // good b is Bar
+        }
+        if ((#p1 in fsb)) {
+            fsb; // good fsb is FooSub
+        }
+        else {
+            fsb; // good fsb is Bar
         }
         class Nested {
             m(v) {

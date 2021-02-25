@@ -8,7 +8,7 @@ tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.t
 tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(34,21): error TS2361: The right-hand side of an 'in' expression must not be a primitive.
 tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(36,14): error TS2363: The right-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
 tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(46,24): error TS2531: Object is possibly 'null'.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(93,12): error TS18016: Private identifiers are not allowed outside class bodies.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(99,12): error TS18016: Private identifiers are not allowed outside class bodies.
 
 
 ==== tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts (11 errors) ====
@@ -71,7 +71,7 @@ tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.t
     
             #p1 in v && #p1 in v; // Good precedence: ((#p1 in v) && (#p1 in v))
         }
-        flow(u: unknown, fb: Foo | Bar, fs: FooSub, b: Bar) {
+        flow(u: unknown, fb: Foo | Bar, fs: FooSub, b: Bar, fsb: FooSub | Bar) {
     
             if (typeof u === 'object') {
     
@@ -108,6 +108,12 @@ tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.t
                 b; // good b is 'Bar & Foo'
             } else {
                 b; // good b is Bar
+            }
+    
+            if (#p1 in fsb) {
+                fsb; // good fsb is FooSub
+            } else {
+                fsb; // good fsb is Bar
             }
     
             class Nested {

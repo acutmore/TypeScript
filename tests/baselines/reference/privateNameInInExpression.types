@@ -121,12 +121,13 @@ class Foo {
 >#p1 in v : boolean
 >v : Foo
     }
-    flow(u: unknown, fb: Foo | Bar, fs: FooSub, b: Bar) {
->flow : (u: unknown, fb: Foo | Bar, fs: FooSub, b: Bar) => void
+    flow(u: unknown, fb: Foo | Bar, fs: FooSub, b: Bar, fsb: FooSub | Bar) {
+>flow : (u: unknown, fb: Foo | Bar, fs: FooSub, b: Bar, fsb: FooSub | Bar) => void
 >u : unknown
 >fb : Foo | Bar
 >fs : FooSub
 >b : Bar
+>fsb : Bar | FooSub
 
         if (typeof u === 'object') {
 >typeof u === 'object' : boolean
@@ -199,6 +200,18 @@ class Foo {
         } else {
             b; // good b is Bar
 >b : Bar
+        }
+
+        if (#p1 in fsb) {
+>#p1 in fsb : boolean
+>fsb : Bar | FooSub
+
+            fsb; // good fsb is FooSub
+>fsb : FooSub
+
+        } else {
+            fsb; // good fsb is Bar
+>fsb : Bar
         }
 
         class Nested {
