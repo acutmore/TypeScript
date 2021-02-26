@@ -31348,6 +31348,8 @@ namespace ts {
                 return anyType;
             }
 
+            markPropertyAsReferenced(lexicallyScopedSymbol, /* nodeForCheckWriteOnly: */ undefined, /* isThisAccess: */ false);
+
             const exp = node.expression;
             let rightType = checkExpression(exp, checkMode);
             if (rightType === silentNeverType) {
