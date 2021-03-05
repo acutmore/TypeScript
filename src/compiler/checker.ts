@@ -23238,6 +23238,8 @@ namespace ts {
                     return type;
                 }
 
+                // TODO(aclaymore): add logic for private static fields
+
                 const privateId = expr.name;
                 const klass = lookupClassForPrivateIdentifierDeclaration(privateId);
                 if (klass === undefined) {
@@ -31343,8 +31345,13 @@ namespace ts {
             const privateId = node.name;
             const lexicallyScopedSymbol = lookupSymbolForPrivateIdentifierDeclaration(privateId.escapedText, privateId);
             if (lexicallyScopedSymbol === undefined) {
-                // TODO(aclaymore): use better error message - we might be in a class but with no matching privateField
-                error(privateId, Diagnostics.Private_identifiers_are_not_allowed_outside_class_bodies);
+                if (!getContainingClass(node)) {
+                    error(privateId, Diagnostics.Private_identifiers_are_not_allowed_outside_class_bodies);
+                }
+                else {
+                    // TODO(aclamore): suggest similar name
+                    error(node, Diagnostics.Cannot_find_name_0, diagnosticName(privateId));
+                }
                 return anyType;
             }
 
@@ -31356,7 +31363,6 @@ namespace ts {
                 return silentNeverType;
             }
             rightType = checkNonNullType(rightType, exp);
-            // TODO(aclaymore): Do RHS rules matching 'in' rules? (e.g. throw on null)
             checkInExpressionRHS(exp, rightType);
             return booleanType;
         }

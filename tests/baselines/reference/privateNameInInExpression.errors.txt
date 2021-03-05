@@ -1,5 +1,5 @@
 tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(14,26): error TS2571: Object is of type 'unknown'.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(16,19): error TS18016: Private identifiers are not allowed outside class bodies.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(16,19): error TS2304: Cannot find name '#p2'.
 tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(18,23): error TS1005: 'in' expected.
 tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(20,14): error TS2304: Cannot find name '#p1'.
 tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(20,14): error TS18016: Private identifiers are not allowed outside class bodies.
@@ -30,8 +30,8 @@ tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.t
 !!! error TS2571: Object is of type 'unknown'.
     
             const f = #p2 in v; // Bad - Invalid privateID
-                      ~~~
-!!! error TS18016: Private identifiers are not allowed outside class bodies.
+                      ~~~~~~~~
+!!! error TS2304: Cannot find name '#p2'.
     
             const g = (#p1) in v; // Bad - private id is not an expression on it's own
                           
