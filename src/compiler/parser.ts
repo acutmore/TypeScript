@@ -4434,6 +4434,9 @@ namespace ts {
         }
 
         function parsePrivateIdentifierInInExpression(pos: number): Expression {
+            // PrivateIdentifierInInExpression[in]:
+            //     [+in] PrivateIdentifier in RelationalExpression[?in]
+
             Debug.assert(token() === SyntaxKind.PrivateIdentifier, "parsePrivateIdentifierInInExpression should only have been called if we had a privateIdentifier");
             Debug.assert(inDisallowInContext() === false, "parsePrivateIdentifierInInExpression should only have been called if 'in' is allowed");
             const id = parsePrivateIdentifier();
@@ -4441,13 +4444,17 @@ namespace ts {
                 // TODO(aclaymore) use better error
                 return createMissingNode(SyntaxKind.InKeyword, /*reportAtCurrentPosition*/ true, Diagnostics._0_expected, tokenToString(SyntaxKind.InKeyword));
             }
-            nextToken();
-            // TODO(aclaymore) verify precedence is correct
+
+            const inToken = parseTokenNode<Token<SyntaxKind.InKeyword>>();
             const exp = parseBinaryExpressionOrHigher(OperatorPrecedence.Relational);
-            return finishNode(factory.createPrivateIdentifierInInExpression(id, exp), pos);
+            return finishNode(factory.createPrivateIdentifierInInExpression(id, inToken, exp), pos);
         }
 
         function parseBinaryExpressionOrHigher(precedence: OperatorPrecedence): Expression {
+            // parse a BinaryExpression the LHS is either:
+            // 1) a PrivateIdentifierInInExpression when 'in' flag allowed and lookahead matches a PrivateIdentifier
+            // 2) a UnaryExpression
+
             const pos = getNodePos();
             const tryPrivateIdentifierInIn = token() === SyntaxKind.PrivateIdentifier && !inDisallowInContext();
             const leftOperand = tryPrivateIdentifierInIn

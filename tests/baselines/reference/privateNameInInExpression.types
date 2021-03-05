@@ -52,7 +52,7 @@ class Foo {
 >#p2 in v : any
 >v : any
 
-        const g = (#p1) in v; // Bad - private id is not an expression on it's own
+        const g = (#p1) in v; // Bad - private id is not an expression on its own
 >g : boolean
 >(#p1) in v : boolean
 >(#p1) : any
@@ -74,52 +74,19 @@ class Foo {
 >v : any
 
     }
-    precedence(v: any) {
->precedence : (v: any) => void
+    whitespace(v: any) {
+>whitespace : (v: any) => void
 >v : any
 
-        // '==' has lower precedence than 'in'
-        // '<'  has same precedence than 'in'
-        // '<<' has higher precedence than 'in'
+        const a = v && /*0*/#p1/*1*/
+>a : any
+>v && /*0*/#p1/*1*/            /*2*/in/*3*/                /*4*/v : any
+>v : any
+>#p1/*1*/            /*2*/in/*3*/                /*4*/v : boolean
 
-        v == #p1 in v == v; // Good precedence: ((v == (#p1 in v)) == v)
->v == #p1 in v == v : boolean
->v == #p1 in v : boolean
+            /*2*/in/*3*/
+                /*4*/v/*5*/
 >v : any
->#p1 in v : boolean
->v : any
->v : any
-
-        v << #p1 in v << v; // Good precedence: (v << (#p1 in (v << v)))
->v << #p1 in v << v : number
->v : any
->#p1 in v << v : boolean
->v << v : number
->v : any
->v : any
-
-        v << #p1 in v == v; // Good precedence: ((v << (#p1 in v)) == v)
->v << #p1 in v == v : boolean
->v << #p1 in v : number
->v : any
->#p1 in v : boolean
->v : any
->v : any
-
-        v == #p1 in v < v; // Good precedence: (v == ((#p1 in v) < v))
->v == #p1 in v < v : boolean
->v : any
->#p1 in v < v : boolean
->#p1 in v : boolean
->v : any
->v : any
-
-        #p1 in v && #p1 in v; // Good precedence: ((#p1 in v) && (#p1 in v))
->#p1 in v && #p1 in v : boolean
->#p1 in v : boolean
->v : any
->#p1 in v : boolean
->v : Foo
     }
     flow(u: unknown, fb: Foo | Bar, fs: FooSub, b: Bar, fsb: FooSub | Bar) {
 >flow : (u: unknown, fb: Foo | Bar, fs: FooSub, b: Bar, fsb: FooSub | Bar) => void

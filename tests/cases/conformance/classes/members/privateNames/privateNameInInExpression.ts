@@ -18,7 +18,7 @@ class Foo {
 
         const f = #p2 in v; // Bad - Invalid privateID
 
-        const g = (#p1) in v; // Bad - private id is not an expression on it's own
+        const g = (#p1) in v; // Bad - private id is not an expression on its own
 
         for (#p1 in v) { /* no-op */ } // Bad - 'in' not allowed
 
@@ -27,20 +27,10 @@ class Foo {
         for (let x in #p1 in v as any) { /* no-op */ } // Good - weird but valid
 
     }
-    precedence(v: any) {
-        // '==' has lower precedence than 'in'
-        // '<'  has same precedence than 'in'
-        // '<<' has higher precedence than 'in'
-
-        v == #p1 in v == v; // Good precedence: ((v == (#p1 in v)) == v)
-
-        v << #p1 in v << v; // Good precedence: (v << (#p1 in (v << v)))
-
-        v << #p1 in v == v; // Good precedence: ((v << (#p1 in v)) == v)
-
-        v == #p1 in v < v; // Good precedence: (v == ((#p1 in v) < v))
-
-        #p1 in v && #p1 in v; // Good precedence: ((#p1 in v) && (#p1 in v))
+    whitespace(v: any) {
+        const a = v && /*0*/#p1/*1*/
+            /*2*/in/*3*/
+                /*4*/v/*5*/
     }
     flow(u: unknown, fb: Foo | Bar, fs: FooSub, b: Bar, fsb: FooSub | Bar) {
 

@@ -1,5 +1,4 @@
 === tests/cases/conformance/classes/members/privateNames/privateNameInInExpressionTransform.ts ===
-// TODO(aclaymore) check where transform cases live
 // TODO(aclaymore) add cases for static fields
 
 class Foo {
@@ -16,6 +15,53 @@ class Foo {
         #p1 in v; // expect `_p1.has(v)`
 >#p1 in v : boolean
 >v : any
+    }
+    precedence(v: any) {
+>precedence : (v: any) => void
+>v : any
+
+        // '==' has lower precedence than 'in'
+        // '<'  has same precedence than 'in'
+        // '<<' has higher precedence than 'in'
+
+        v == #p1 in v == v; // Good precedence: ((v == (#p1 in v)) == v)
+>v == #p1 in v == v : boolean
+>v == #p1 in v : boolean
+>v : any
+>#p1 in v : boolean
+>v : any
+>v : any
+
+        v << #p1 in v << v; // Good precedence: (v << (#p1 in (v << v)))
+>v << #p1 in v << v : number
+>v : any
+>#p1 in v << v : boolean
+>v << v : number
+>v : any
+>v : any
+
+        v << #p1 in v == v; // Good precedence: ((v << (#p1 in v)) == v)
+>v << #p1 in v == v : boolean
+>v << #p1 in v : number
+>v : any
+>#p1 in v : boolean
+>v : any
+>v : any
+
+        v == #p1 in v < v; // Good precedence: (v == ((#p1 in v) < v))
+>v == #p1 in v < v : boolean
+>v : any
+>#p1 in v < v : boolean
+>#p1 in v : boolean
+>v : any
+>v : any
+
+        #p1 in v && #p1 in v; // Good precedence: ((#p1 in v) && (#p1 in v))
+>#p1 in v && #p1 in v : boolean
+>#p1 in v : boolean
+>v : any
+>#p1 in v : boolean
+>v : Foo
     }
 }
 

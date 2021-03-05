@@ -2554,7 +2554,6 @@ namespace ts {
                     state.declarationListContainerEndStack[state.stackIndex] = declarationListContainerEnd;
                     const emitComments = state.shouldEmitCommentsStack[state.stackIndex] = shouldEmitComments(node);
                     const emitSourceMaps = state.shouldEmitSourceMapsStack[state.stackIndex] = shouldEmitSourceMaps(node);
-                    writeToken(SyntaxKind.OpenParenToken, node.pos, writePunctuation); // TODO(aclaymore): remove - for debugging
                     beforeEmitWithContext(node, emitComments, emitSourceMaps);
                 }
                 else {
@@ -2594,7 +2593,6 @@ namespace ts {
                     const shouldEmitComments = state.shouldEmitCommentsStack[state.stackIndex];
                     const shouldEmitSourceMaps = state.shouldEmitSourceMapsStack[state.stackIndex];
                     afterEmitWithContext(node, shouldEmitComments, shouldEmitSourceMaps, savedContainerPos, savedContainerEnd, savedDeclarationListContainerEnd, savedPreserveSourceNewlines);
-                    writeToken(SyntaxKind.CloseParenToken, node.pos, writePunctuation); // TODO(aclaymore): remove - for debugging
                     state.stackIndex--;
                 }
             }
@@ -2610,14 +2608,21 @@ namespace ts {
         }
 
         function emitPrivateIdentifierInInExpression(node: PrivateIdentifierInInExpression) {
-            // TODO(aclaymore) - emit better. Temp adding parenthesis for debugging
-            writeToken(SyntaxKind.OpenParenToken, node.pos, writePunctuation);
+            const linesBeforeIn = getLinesBetweenNodes(node, node.name, node.inToken);
+            const linesAfterIn = getLinesBetweenNodes(node, node.inToken, node.expression);
+
+            emitLeadingCommentsOfPosition(node.name.pos);
             emitPrivateIdentifier(node.name);
-            writeSpace();
-            writeToken(SyntaxKind.InKeyword, node.pos, writePunctuation);
-            writeSpace();
+            emitTrailingCommentsOfPosition(node.name.end);
+
+            writeLinesAndIndent(linesBeforeIn, /*writeSpaceIfNotIndenting*/ true);
+            emitLeadingCommentsOfPosition(node.inToken.pos);
+            writeTokenNode(node.inToken, writeKeyword);
+            emitTrailingCommentsOfPosition(node.inToken.end, /*prefixSpace*/ true);
+            writeLinesAndIndent(linesAfterIn, /*writeSpaceIfNotIndenting*/ true);
+
             emit(node.expression);
-            writeToken(SyntaxKind.CloseParenToken, node.pos, writePunctuation);
+            decreaseIndentIf(linesBeforeIn, linesAfterIn);
         }
 
         function emitConditionalExpression(node: ConditionalExpression) {

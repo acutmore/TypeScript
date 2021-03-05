@@ -1,44 +1,75 @@
 === tests/cases/conformance/classes/members/privateNames/privateNameInInExpressionTransform.ts ===
-// TODO(aclaymore) check where transform cases live
 // TODO(aclaymore) add cases for static fields
 
 class Foo {
 >Foo : Symbol(Foo, Decl(privateNameInInExpressionTransform.ts, 0, 0))
 
     #p1 = 1;
->#p1 : Symbol(Foo.#p1, Decl(privateNameInInExpressionTransform.ts, 3, 11))
+>#p1 : Symbol(Foo.#p1, Decl(privateNameInInExpressionTransform.ts, 2, 11))
 
     check(v: any) {
->check : Symbol(Foo.check, Decl(privateNameInInExpressionTransform.ts, 4, 12))
->v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 5, 10))
+>check : Symbol(Foo.check, Decl(privateNameInInExpressionTransform.ts, 3, 12))
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 4, 10))
 
         #p1 in v; // expect `_p1.has(v)`
->v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 5, 10))
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 4, 10))
+    }
+    precedence(v: any) {
+>precedence : Symbol(Foo.precedence, Decl(privateNameInInExpressionTransform.ts, 6, 5))
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 7, 15))
+
+        // '==' has lower precedence than 'in'
+        // '<'  has same precedence than 'in'
+        // '<<' has higher precedence than 'in'
+
+        v == #p1 in v == v; // Good precedence: ((v == (#p1 in v)) == v)
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 7, 15))
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 7, 15))
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 7, 15))
+
+        v << #p1 in v << v; // Good precedence: (v << (#p1 in (v << v)))
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 7, 15))
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 7, 15))
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 7, 15))
+
+        v << #p1 in v == v; // Good precedence: ((v << (#p1 in v)) == v)
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 7, 15))
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 7, 15))
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 7, 15))
+
+        v == #p1 in v < v; // Good precedence: (v == ((#p1 in v) < v))
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 7, 15))
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 7, 15))
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 7, 15))
+
+        #p1 in v && #p1 in v; // Good precedence: ((#p1 in v) && (#p1 in v))
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 7, 15))
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 7, 15))
     }
 }
 
 class Bar {
->Bar : Symbol(Bar, Decl(privateNameInInExpressionTransform.ts, 8, 1))
+>Bar : Symbol(Bar, Decl(privateNameInInExpressionTransform.ts, 22, 1))
 
     #p1 = 1;
->#p1 : Symbol(Bar.#p1, Decl(privateNameInInExpressionTransform.ts, 10, 11))
+>#p1 : Symbol(Bar.#p1, Decl(privateNameInInExpressionTransform.ts, 24, 11))
 
     check(v: any) {
->check : Symbol(Bar.check, Decl(privateNameInInExpressionTransform.ts, 11, 12))
->v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 12, 10))
+>check : Symbol(Bar.check, Decl(privateNameInInExpressionTransform.ts, 25, 12))
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 26, 10))
 
         #p1 in v; // expect `_p1_1.has(v)`
->v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 12, 10))
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 26, 10))
     }
 }
 
 function error(v: Foo) {
->error : Symbol(error, Decl(privateNameInInExpressionTransform.ts, 15, 1))
->v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 17, 15))
+>error : Symbol(error, Decl(privateNameInInExpressionTransform.ts, 29, 1))
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 31, 15))
 >Foo : Symbol(Foo, Decl(privateNameInInExpressionTransform.ts, 0, 0))
 
     return #p1 in v; // expect `in v`
->v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 17, 15))
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 31, 15))
 }
 
 export { }

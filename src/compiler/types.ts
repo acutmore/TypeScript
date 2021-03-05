@@ -2309,6 +2309,7 @@ namespace ts {
     export interface PrivateIdentifierInInExpression extends Expression {
         readonly kind: SyntaxKind.PrivateIdentifierInInExpression;
         readonly name: PrivateIdentifier;
+        readonly inToken: Token<SyntaxKind.InKeyword>;
         readonly expression: Expression;
     }
 
@@ -7095,8 +7096,8 @@ namespace ts {
         updateNonNullChain(node: NonNullChain, expression: Expression): NonNullChain;
         createMetaProperty(keywordToken: MetaProperty["keywordToken"], name: Identifier): MetaProperty;
         updateMetaProperty(node: MetaProperty, name: Identifier): MetaProperty;
-        createPrivateIdentifierInInExpression(name: PrivateIdentifier, expression: Expression): PrivateIdentifierInInExpression;
-        updatePrivateIdentifierInInExpression(node: PrivateIdentifierInInExpression, name: PrivateIdentifier, expression: Expression): PrivateIdentifierInInExpression;
+        createPrivateIdentifierInInExpression(name: PrivateIdentifier, inToken: Token<SyntaxKind.InKeyword>, expression: Expression): PrivateIdentifierInInExpression;
+        updatePrivateIdentifierInInExpression(node: PrivateIdentifierInInExpression, name: PrivateIdentifier, inToken: Token<SyntaxKind.InKeyword>, expression: Expression): PrivateIdentifierInInExpression;
 
         //
         // Misc

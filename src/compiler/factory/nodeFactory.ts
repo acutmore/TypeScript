@@ -3062,12 +3062,14 @@ namespace ts {
         }
 
         // @api
-        function createPrivateIdentifierInInExpression(name: PrivateIdentifier, expression: Expression) {
+        function createPrivateIdentifierInInExpression(name: PrivateIdentifier, inToken: Token<SyntaxKind.InKeyword>, expression: Expression) {
             const node = createBaseExpression<PrivateIdentifierInInExpression>(SyntaxKind.PrivateIdentifierInInExpression);
             node.name = name;
+            node.inToken = inToken;
             node.expression = expression;
             node.transformFlags |=
                 propagateChildFlags(node.name) |
+                propagateChildFlags(node.inToken) |
                 propagateChildFlags(node.expression) |
                 TransformFlags.ContainsESNext;
             return node;
@@ -3077,11 +3079,13 @@ namespace ts {
         function updatePrivateIdentifierInInExpression(
             node: PrivateIdentifierInInExpression,
             name: PrivateIdentifier,
+            inToken: Token<SyntaxKind.InKeyword>,
             expression: Expression
         ): PrivateIdentifierInInExpression {
             return node.name !== name
+                || node.inToken !== inToken
                 || node.expression !== expression
-                ? update(createPrivateIdentifierInInExpression(name, expression), node)
+                ? update(createPrivateIdentifierInInExpression(name, inToken, expression), node)
                 : node;
         }
 

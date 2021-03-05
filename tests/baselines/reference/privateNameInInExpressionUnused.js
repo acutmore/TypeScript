@@ -19,6 +19,6 @@ class Foo {
     #brand; // expect no error
     isFoo(v) {
         // This should count as using/reading '#p1'
-        return (#brand in v);
+        return #brand in v;
     }
 }

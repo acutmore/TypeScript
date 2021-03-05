@@ -36,7 +36,7 @@ class Foo {
 >f : Symbol(f, Decl(privateNameInInExpression.ts, 15, 13))
 >v : Symbol(v, Decl(privateNameInInExpression.ts, 4, 11))
 
-        const g = (#p1) in v; // Bad - private id is not an expression on it's own
+        const g = (#p1) in v; // Bad - private id is not an expression on its own
 >g : Symbol(g, Decl(privateNameInInExpression.ts, 17, 13))
 >v : Symbol(v, Decl(privateNameInInExpression.ts, 4, 11))
 
@@ -52,138 +52,118 @@ class Foo {
 >v : Symbol(v, Decl(privateNameInInExpression.ts, 4, 11))
 
     }
-    precedence(v: any) {
->precedence : Symbol(Foo.precedence, Decl(privateNameInInExpression.ts, 25, 5))
+    whitespace(v: any) {
+>whitespace : Symbol(Foo.whitespace, Decl(privateNameInInExpression.ts, 25, 5))
 >v : Symbol(v, Decl(privateNameInInExpression.ts, 26, 15))
 
-        // '==' has lower precedence than 'in'
-        // '<'  has same precedence than 'in'
-        // '<<' has higher precedence than 'in'
-
-        v == #p1 in v == v; // Good precedence: ((v == (#p1 in v)) == v)
->v : Symbol(v, Decl(privateNameInInExpression.ts, 26, 15))
->v : Symbol(v, Decl(privateNameInInExpression.ts, 26, 15))
+        const a = v && /*0*/#p1/*1*/
+>a : Symbol(a, Decl(privateNameInInExpression.ts, 27, 13))
 >v : Symbol(v, Decl(privateNameInInExpression.ts, 26, 15))
 
-        v << #p1 in v << v; // Good precedence: (v << (#p1 in (v << v)))
->v : Symbol(v, Decl(privateNameInInExpression.ts, 26, 15))
->v : Symbol(v, Decl(privateNameInInExpression.ts, 26, 15))
->v : Symbol(v, Decl(privateNameInInExpression.ts, 26, 15))
-
-        v << #p1 in v == v; // Good precedence: ((v << (#p1 in v)) == v)
->v : Symbol(v, Decl(privateNameInInExpression.ts, 26, 15))
->v : Symbol(v, Decl(privateNameInInExpression.ts, 26, 15))
->v : Symbol(v, Decl(privateNameInInExpression.ts, 26, 15))
-
-        v == #p1 in v < v; // Good precedence: (v == ((#p1 in v) < v))
->v : Symbol(v, Decl(privateNameInInExpression.ts, 26, 15))
->v : Symbol(v, Decl(privateNameInInExpression.ts, 26, 15))
->v : Symbol(v, Decl(privateNameInInExpression.ts, 26, 15))
-
-        #p1 in v && #p1 in v; // Good precedence: ((#p1 in v) && (#p1 in v))
->v : Symbol(v, Decl(privateNameInInExpression.ts, 26, 15))
+            /*2*/in/*3*/
+                /*4*/v/*5*/
 >v : Symbol(v, Decl(privateNameInInExpression.ts, 26, 15))
     }
     flow(u: unknown, fb: Foo | Bar, fs: FooSub, b: Bar, fsb: FooSub | Bar) {
->flow : Symbol(Foo.flow, Decl(privateNameInInExpression.ts, 40, 5))
->u : Symbol(u, Decl(privateNameInInExpression.ts, 41, 9))
->fb : Symbol(fb, Decl(privateNameInInExpression.ts, 41, 20))
+>flow : Symbol(Foo.flow, Decl(privateNameInInExpression.ts, 30, 5))
+>u : Symbol(u, Decl(privateNameInInExpression.ts, 31, 9))
+>fb : Symbol(fb, Decl(privateNameInInExpression.ts, 31, 20))
 >Foo : Symbol(Foo, Decl(privateNameInInExpression.ts, 0, 0))
->Bar : Symbol(Bar, Decl(privateNameInInExpression.ts, 94, 28))
->fs : Symbol(fs, Decl(privateNameInInExpression.ts, 41, 35))
->FooSub : Symbol(FooSub, Decl(privateNameInInExpression.ts, 92, 1))
->b : Symbol(b, Decl(privateNameInInExpression.ts, 41, 47))
->Bar : Symbol(Bar, Decl(privateNameInInExpression.ts, 94, 28))
->fsb : Symbol(fsb, Decl(privateNameInInExpression.ts, 41, 55))
->FooSub : Symbol(FooSub, Decl(privateNameInInExpression.ts, 92, 1))
->Bar : Symbol(Bar, Decl(privateNameInInExpression.ts, 94, 28))
+>Bar : Symbol(Bar, Decl(privateNameInInExpression.ts, 84, 28))
+>fs : Symbol(fs, Decl(privateNameInInExpression.ts, 31, 35))
+>FooSub : Symbol(FooSub, Decl(privateNameInInExpression.ts, 82, 1))
+>b : Symbol(b, Decl(privateNameInInExpression.ts, 31, 47))
+>Bar : Symbol(Bar, Decl(privateNameInInExpression.ts, 84, 28))
+>fsb : Symbol(fsb, Decl(privateNameInInExpression.ts, 31, 55))
+>FooSub : Symbol(FooSub, Decl(privateNameInInExpression.ts, 82, 1))
+>Bar : Symbol(Bar, Decl(privateNameInInExpression.ts, 84, 28))
 
         if (typeof u === 'object') {
->u : Symbol(u, Decl(privateNameInInExpression.ts, 41, 9))
+>u : Symbol(u, Decl(privateNameInInExpression.ts, 31, 9))
 
             if (#p1 in u) {
->u : Symbol(u, Decl(privateNameInInExpression.ts, 41, 9))
+>u : Symbol(u, Decl(privateNameInInExpression.ts, 31, 9))
 
                 u; // good u is Foo
->u : Symbol(u, Decl(privateNameInInExpression.ts, 41, 9))
+>u : Symbol(u, Decl(privateNameInInExpression.ts, 31, 9))
 
             } else {
                 u; // good u is object | null
->u : Symbol(u, Decl(privateNameInInExpression.ts, 41, 9))
+>u : Symbol(u, Decl(privateNameInInExpression.ts, 31, 9))
             }
 
             if (u !== null) {
->u : Symbol(u, Decl(privateNameInInExpression.ts, 41, 9))
+>u : Symbol(u, Decl(privateNameInInExpression.ts, 31, 9))
 
                 if (#p1 in u) {
->u : Symbol(u, Decl(privateNameInInExpression.ts, 41, 9))
+>u : Symbol(u, Decl(privateNameInInExpression.ts, 31, 9))
 
                     u; // good u is Foo
->u : Symbol(u, Decl(privateNameInInExpression.ts, 41, 9))
+>u : Symbol(u, Decl(privateNameInInExpression.ts, 31, 9))
 
                 } else {
                     u; // good u is object
->u : Symbol(u, Decl(privateNameInInExpression.ts, 41, 9))
+>u : Symbol(u, Decl(privateNameInInExpression.ts, 31, 9))
                 }
             }
         }
 
         if (#p1 in fb) {
->fb : Symbol(fb, Decl(privateNameInInExpression.ts, 41, 20))
+>fb : Symbol(fb, Decl(privateNameInInExpression.ts, 31, 20))
 
             fb; // good fb is Foo
->fb : Symbol(fb, Decl(privateNameInInExpression.ts, 41, 20))
+>fb : Symbol(fb, Decl(privateNameInInExpression.ts, 31, 20))
 
         } else {
             fb; // good fb is Bar
->fb : Symbol(fb, Decl(privateNameInInExpression.ts, 41, 20))
+>fb : Symbol(fb, Decl(privateNameInInExpression.ts, 31, 20))
         }
 
         if (#p1 in fs) {
->fs : Symbol(fs, Decl(privateNameInInExpression.ts, 41, 35))
+>fs : Symbol(fs, Decl(privateNameInInExpression.ts, 31, 35))
 
             fs; // good fb is Foo (or FooSub?)
->fs : Symbol(fs, Decl(privateNameInInExpression.ts, 41, 35))
+>fs : Symbol(fs, Decl(privateNameInInExpression.ts, 31, 35))
 
         } else {
             fs; // good fs is never
->fs : Symbol(fs, Decl(privateNameInInExpression.ts, 41, 35))
+>fs : Symbol(fs, Decl(privateNameInInExpression.ts, 31, 35))
         }
 
         if (#p1 in b) {
->b : Symbol(b, Decl(privateNameInInExpression.ts, 41, 47))
+>b : Symbol(b, Decl(privateNameInInExpression.ts, 31, 47))
 
             b; // good b is 'Bar & Foo'
->b : Symbol(b, Decl(privateNameInInExpression.ts, 41, 47))
+>b : Symbol(b, Decl(privateNameInInExpression.ts, 31, 47))
 
         } else {
             b; // good b is Bar
->b : Symbol(b, Decl(privateNameInInExpression.ts, 41, 47))
+>b : Symbol(b, Decl(privateNameInInExpression.ts, 31, 47))
         }
 
         if (#p1 in fsb) {
->fsb : Symbol(fsb, Decl(privateNameInInExpression.ts, 41, 55))
+>fsb : Symbol(fsb, Decl(privateNameInInExpression.ts, 31, 55))
 
             fsb; // good fsb is FooSub
->fsb : Symbol(fsb, Decl(privateNameInInExpression.ts, 41, 55))
+>fsb : Symbol(fsb, Decl(privateNameInInExpression.ts, 31, 55))
 
         } else {
             fsb; // good fsb is Bar
->fsb : Symbol(fsb, Decl(privateNameInInExpression.ts, 41, 55))
+>fsb : Symbol(fsb, Decl(privateNameInInExpression.ts, 31, 55))
         }
 
         class Nested {
->Nested : Symbol(Nested, Decl(privateNameInInExpression.ts, 82, 9))
+>Nested : Symbol(Nested, Decl(privateNameInInExpression.ts, 72, 9))
 
             m(v: any) {
->m : Symbol(Nested.m, Decl(privateNameInInExpression.ts, 84, 22))
->v : Symbol(v, Decl(privateNameInInExpression.ts, 85, 14))
+>m : Symbol(Nested.m, Decl(privateNameInInExpression.ts, 74, 22))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 75, 14))
 
                 if (#p1 in v) {
->v : Symbol(v, Decl(privateNameInInExpression.ts, 85, 14))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 75, 14))
 
                     v; // good v is Foo
->v : Symbol(v, Decl(privateNameInInExpression.ts, 85, 14))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 75, 14))
                 }
             }
         }
@@ -191,20 +171,20 @@ class Foo {
 }
 
 class FooSub extends Foo { }
->FooSub : Symbol(FooSub, Decl(privateNameInInExpression.ts, 92, 1))
+>FooSub : Symbol(FooSub, Decl(privateNameInInExpression.ts, 82, 1))
 >Foo : Symbol(Foo, Decl(privateNameInInExpression.ts, 0, 0))
 
 class Bar { notFoo = true }
->Bar : Symbol(Bar, Decl(privateNameInInExpression.ts, 94, 28))
->notFoo : Symbol(Bar.notFoo, Decl(privateNameInInExpression.ts, 95, 11))
+>Bar : Symbol(Bar, Decl(privateNameInInExpression.ts, 84, 28))
+>notFoo : Symbol(Bar.notFoo, Decl(privateNameInInExpression.ts, 85, 11))
 
 function error(v: Foo) {
->error : Symbol(error, Decl(privateNameInInExpression.ts, 95, 27))
->v : Symbol(v, Decl(privateNameInInExpression.ts, 97, 15))
+>error : Symbol(error, Decl(privateNameInInExpression.ts, 85, 27))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 87, 15))
 >Foo : Symbol(Foo, Decl(privateNameInInExpression.ts, 0, 0))
 
     return #p1 in v; // Bad - outside of class
->v : Symbol(v, Decl(privateNameInInExpression.ts, 97, 15))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 87, 15))
 }
 
 export { }
