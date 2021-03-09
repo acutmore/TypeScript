@@ -23241,12 +23241,12 @@ namespace ts {
                 // TODO(aclaymore): add logic for private static fields
 
                 const privateId = expr.name;
-                const klass = lookupClassForPrivateIdentifierDeclaration(privateId);
-                if (klass === undefined) {
+                const symbol = lookupSymbolForPrivateIdentifierDeclaration(privateId.escapedText, privateId);
+                if (symbol === undefined) {
                     return type;
                 }
-
-                const classType = <InterfaceType>getTypeOfSymbolAtLocation(getSymbolOfNode(klass), klass);
+                const classSymbol = symbol.parent!;
+                const classType = <InterfaceType>getTypeOfSymbol(classSymbol);
                 const ctorSigs = getSignaturesOfType(classType, SignatureKind.Construct);
                 // TODO(aclaymore): verify assertion is valid
                 Debug.assert(ctorSigs.length > 0, "narrowTypeByPrivateIdentifierInInExpression should always find the class signature");
@@ -26908,17 +26908,6 @@ namespace ts {
                 const prop = (symbol.members && symbol.members.get(name)) || (symbol.exports && symbol.exports.get(name));
                 if (prop) {
                     return prop;
-                }
-            }
-        }
-
-        function lookupClassForPrivateIdentifierDeclaration(id: PrivateIdentifier): ClassLikeDeclaration | undefined {
-            for (let containingClass = getContainingClass(id); !!containingClass; containingClass = getContainingClass(containingClass)) {
-                const { symbol } = containingClass;
-                const name = getSymbolNameForPrivateIdentifier(symbol, id.escapedText);
-                const prop = (symbol.members && symbol.members.get(name)) || (symbol.exports && symbol.exports.get(name));
-                if (prop) {
-                    return containingClass;
                 }
             }
         }
