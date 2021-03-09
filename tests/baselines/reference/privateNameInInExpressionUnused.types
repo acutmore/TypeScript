@@ -1,20 +1,18 @@
 === tests/cases/conformance/classes/members/privateNames/privateNameInInExpressionUnused.ts ===
-// TODO(aclaymore): verify we want this behavior
-
 class Foo {
 >Foo : Foo
 
-    private readonly unused: undefined; // expect unused error
->unused : undefined
+    #unused: undefined; // expect unused error
+>#unused : undefined
 
-    readonly #brand: undefined; // expect no error
+    #brand: undefined; // expect no error
 >#brand : undefined
 
     isFoo(v: any): v is Foo {
 >isFoo : (v: any) => v is Foo
 >v : any
 
-        // This should count as using/reading '#p1'
+        // This should count as using/reading '#brand'
         return #brand in v;
 >#brand in v : boolean
 >v : any

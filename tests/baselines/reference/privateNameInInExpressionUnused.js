@@ -1,12 +1,10 @@
 //// [privateNameInInExpressionUnused.ts]
-// TODO(aclaymore): verify we want this behavior
-
 class Foo {
-    private readonly unused: undefined; // expect unused error
-    readonly #brand: undefined; // expect no error
+    #unused: undefined; // expect unused error
+    #brand: undefined; // expect no error
 
     isFoo(v: any): v is Foo {
-        // This should count as using/reading '#p1'
+        // This should count as using/reading '#brand'
         return #brand in v;
     }
 }
@@ -14,11 +12,11 @@ class Foo {
 
 //// [privateNameInInExpressionUnused.js]
 "use strict";
-// TODO(aclaymore): verify we want this behavior
 class Foo {
+    #unused; // expect unused error
     #brand; // expect no error
     isFoo(v) {
-        // This should count as using/reading '#p1'
+        // This should count as using/reading '#brand'
         return #brand in v;
     }
 }
