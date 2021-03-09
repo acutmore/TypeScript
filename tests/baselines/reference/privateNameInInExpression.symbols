@@ -74,14 +74,14 @@ class Foo {
 >n : Symbol(n, Decl(privateNameInInExpression.ts, 33, 20))
 >fb : Symbol(fb, Decl(privateNameInInExpression.ts, 33, 30))
 >Foo : Symbol(Foo, Decl(privateNameInInExpression.ts, 0, 0))
->Bar : Symbol(Bar, Decl(privateNameInInExpression.ts, 90, 28))
+>Bar : Symbol(Bar, Decl(privateNameInInExpression.ts, 90, 48))
 >fs : Symbol(fs, Decl(privateNameInInExpression.ts, 33, 45))
 >FooSub : Symbol(FooSub, Decl(privateNameInInExpression.ts, 88, 1))
 >b : Symbol(b, Decl(privateNameInInExpression.ts, 33, 57))
->Bar : Symbol(Bar, Decl(privateNameInInExpression.ts, 90, 28))
+>Bar : Symbol(Bar, Decl(privateNameInInExpression.ts, 90, 48))
 >fsb : Symbol(fsb, Decl(privateNameInInExpression.ts, 33, 65))
 >FooSub : Symbol(FooSub, Decl(privateNameInInExpression.ts, 88, 1))
->Bar : Symbol(Bar, Decl(privateNameInInExpression.ts, 90, 28))
+>Bar : Symbol(Bar, Decl(privateNameInInExpression.ts, 90, 48))
 
         if (typeof u === 'object') {
 >u : Symbol(u, Decl(privateNameInInExpression.ts, 33, 9))
@@ -134,7 +134,7 @@ class Foo {
         if (#p1 in fs) {
 >fs : Symbol(fs, Decl(privateNameInInExpression.ts, 33, 45))
 
-            fs; // good fb is Foo (or FooSub?)
+            fs; // good fs is FooSub
 >fs : Symbol(fs, Decl(privateNameInInExpression.ts, 33, 45))
 
         } else {
@@ -182,12 +182,13 @@ class Foo {
     }
 }
 
-class FooSub extends Foo { }
+class FooSub extends Foo { subTypeOfFoo = true }
 >FooSub : Symbol(FooSub, Decl(privateNameInInExpression.ts, 88, 1))
 >Foo : Symbol(Foo, Decl(privateNameInInExpression.ts, 0, 0))
+>subTypeOfFoo : Symbol(FooSub.subTypeOfFoo, Decl(privateNameInInExpression.ts, 90, 26))
 
 class Bar { notFoo = true }
->Bar : Symbol(Bar, Decl(privateNameInInExpression.ts, 90, 28))
+>Bar : Symbol(Bar, Decl(privateNameInInExpression.ts, 90, 48))
 >notFoo : Symbol(Bar.notFoo, Decl(privateNameInInExpression.ts, 91, 11))
 
 function error(v: Foo) {

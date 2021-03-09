@@ -64,7 +64,7 @@ class Foo {
         }
 
         if (#p1 in fs) {
-            fs; // good fb is Foo (or FooSub?)
+            fs; // good fs is FooSub
         } else {
             fs; // good fs is never
         }
@@ -91,7 +91,7 @@ class Foo {
     }
 }
 
-class FooSub extends Foo { }
+class FooSub extends Foo { subTypeOfFoo = true }
 class Bar { notFoo = true }
 
 function error(v: Foo) {

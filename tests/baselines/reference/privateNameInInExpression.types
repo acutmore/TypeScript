@@ -166,8 +166,8 @@ class Foo {
 >#p1 in fs : boolean
 >fs : FooSub
 
-            fs; // good fb is Foo (or FooSub?)
->fs : Foo
+            fs; // good fs is FooSub
+>fs : FooSub
 
         } else {
             fs; // good fs is never
@@ -217,9 +217,11 @@ class Foo {
     }
 }
 
-class FooSub extends Foo { }
+class FooSub extends Foo { subTypeOfFoo = true }
 >FooSub : FooSub
 >Foo : Foo
+>subTypeOfFoo : boolean
+>true : true
 
 class Bar { notFoo = true }
 >Bar : Bar
