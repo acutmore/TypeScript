@@ -4452,11 +4452,11 @@ namespace ts {
 
         function parseBinaryExpressionOrHigher(precedence: OperatorPrecedence): Expression {
             // parse a BinaryExpression the LHS is either:
-            // 1) a PrivateIdentifierInInExpression when 'in' flag allowed and lookahead matches a PrivateIdentifier
+            // 1) a PrivateIdentifierInInExpression when 'in' flag allowed and lookahead matches 'PrivateIdentifier in'
             // 2) a UnaryExpression
 
             const pos = getNodePos();
-            const tryPrivateIdentifierInIn = token() === SyntaxKind.PrivateIdentifier && !inDisallowInContext();
+            const tryPrivateIdentifierInIn = token() === SyntaxKind.PrivateIdentifier && !inDisallowInContext() && lookAhead(nextTokenIsInKeyword);
             const leftOperand = tryPrivateIdentifierInIn
                 ? parsePrivateIdentifierInInExpression(pos)
                 : parseUnaryExpressionOrHigher();
@@ -5928,6 +5928,11 @@ namespace ts {
         function nextTokenIsIdentifierOrKeywordOrLiteralOnSameLine() {
             nextToken();
             return (tokenIsIdentifierOrKeyword(token()) || token() === SyntaxKind.NumericLiteral || token() === SyntaxKind.BigIntLiteral || token() === SyntaxKind.StringLiteral) && !scanner.hasPrecedingLineBreak();
+        }
+
+        function nextTokenIsInKeyword() {
+            nextToken();
+            return token() === SyntaxKind.InKeyword;
         }
 
         function isDeclaration(): boolean {

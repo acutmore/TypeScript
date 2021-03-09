@@ -107,7 +107,7 @@ class Foo {
         const d = #p1 in v; // Good d is boolean (not true)
         const e = #p1 in v; // Bad - RHS of in must be object type or any
         const f = #p2 in v; // Bad - Invalid privateID
-        const g = () in v; // Bad - private id is not an expression on its own
+        const g = (#p1) in v; // Bad - private id is not an expression on its own
         for (#p1 in v) { /* no-op */ } // Bad - 'in' not allowed
         for (let x in #p1 in v) { /* no-op */ } // Bad - rhs of in should be a object/any
         for (let x in #p1 in v) { /* no-op */ } // Good - weird but valid

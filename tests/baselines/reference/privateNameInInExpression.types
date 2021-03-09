@@ -56,6 +56,7 @@ class Foo {
 >g : boolean
 >(#p1) in v : boolean
 >(#p1) : any
+>#p1 : any
 >v : any
 
         for (#p1 in v) { /* no-op */ } // Bad - 'in' not allowed
