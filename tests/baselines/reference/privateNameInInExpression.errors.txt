@@ -1,12 +1,12 @@
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(14,26): error TS2571: Object is of type 'unknown'.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(16,19): error TS2304: Cannot find name '#p2'.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(18,20): error TS2304: Cannot find name '#p1'.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(18,20): error TS18016: Private identifiers are not allowed outside class bodies.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(20,14): error TS2304: Cannot find name '#p1'.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(20,14): error TS18016: Private identifiers are not allowed outside class bodies.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(22,23): error TS2407: The right-hand side of a 'for...in' statement must be of type 'any', an object type or a type parameter, but here has type 'boolean'.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(36,24): error TS2531: Object is possibly 'null'.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(89,12): error TS18016: Private identifiers are not allowed outside class bodies.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(16,26): error TS2571: Object is of type 'unknown'.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(18,19): error TS2304: Cannot find name '#p2'.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(20,20): error TS2304: Cannot find name '#p1'.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(20,20): error TS18016: Private identifiers are not allowed outside class bodies.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(22,14): error TS2304: Cannot find name '#p1'.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(22,14): error TS18016: Private identifiers are not allowed outside class bodies.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(24,23): error TS2407: The right-hand side of a 'for...in' statement must be of type 'any', an object type or a type parameter, but here has type 'boolean'.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(42,24): error TS2531: Object is possibly 'null'.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(95,12): error TS18016: Private identifiers are not allowed outside class bodies.
 
 
 ==== tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts (9 errors) ====
@@ -23,15 +23,17 @@ tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.t
     
             const d = #p1 in (v as Foo); // Good d is boolean (not true)
     
-            const e = #p1 in (v as unknown); // Bad - RHS of in must be object type or any
+            const e = #p1 in (v as never); // Good e is boolean
+    
+            const f = #p1 in (v as unknown); // Bad - RHS of in must be object type or any
                              ~~~~~~~~~~~~~~
 !!! error TS2571: Object is of type 'unknown'.
     
-            const f = #p2 in v; // Bad - Invalid privateID
+            const g = #p2 in v; // Bad - Invalid privateID
                       ~~~~~~~~
 !!! error TS2304: Cannot find name '#p2'.
     
-            const g = (#p1) in v; // Bad - private id is not an expression on its own
+            const h = (#p1) in v; // Bad - private id is not an expression on its own
                        ~~~
 !!! error TS2304: Cannot find name '#p1'.
                        ~~~
@@ -55,9 +57,13 @@ tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.t
                 /*2*/in/*3*/
                     /*4*/v/*5*/
         }
-        flow(u: unknown, fb: Foo | Bar, fs: FooSub, b: Bar, fsb: FooSub | Bar) {
+        flow(u: unknown, n: never, fb: Foo | Bar, fs: FooSub, b: Bar, fsb: FooSub | Bar) {
     
             if (typeof u === 'object') {
+    
+                if (#p1 in n) {
+                    n; // good n is never
+                }
     
                 if (#p1 in u) {
                            ~

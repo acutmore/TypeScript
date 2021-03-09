@@ -14,11 +14,13 @@ class Foo {
 
         const d = #p1 in (v as Foo); // Good d is boolean (not true)
 
-        const e = #p1 in (v as unknown); // Bad - RHS of in must be object type or any
+        const e = #p1 in (v as never); // Good e is boolean
 
-        const f = #p2 in v; // Bad - Invalid privateID
+        const f = #p1 in (v as unknown); // Bad - RHS of in must be object type or any
 
-        const g = (#p1) in v; // Bad - private id is not an expression on its own
+        const g = #p2 in v; // Bad - Invalid privateID
+
+        const h = (#p1) in v; // Bad - private id is not an expression on its own
 
         for (#p1 in v) { /* no-op */ } // Bad - 'in' not allowed
 
@@ -32,9 +34,13 @@ class Foo {
             /*2*/in/*3*/
                 /*4*/v/*5*/
     }
-    flow(u: unknown, fb: Foo | Bar, fs: FooSub, b: Bar, fsb: FooSub | Bar) {
+    flow(u: unknown, n: never, fb: Foo | Bar, fs: FooSub, b: Bar, fsb: FooSub | Bar) {
 
         if (typeof u === 'object') {
+
+            if (#p1 in n) {
+                n; // good n is never
+            }
 
             if (#p1 in u) {
                 u; // good u is Foo

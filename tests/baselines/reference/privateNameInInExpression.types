@@ -40,20 +40,27 @@ class Foo {
 >v as Foo : Foo
 >v : any
 
-        const e = #p1 in (v as unknown); // Bad - RHS of in must be object type or any
+        const e = #p1 in (v as never); // Good e is boolean
 >e : boolean
+>#p1 in (v as never) : boolean
+>(v as never) : never
+>v as never : never
+>v : any
+
+        const f = #p1 in (v as unknown); // Bad - RHS of in must be object type or any
+>f : boolean
 >#p1 in (v as unknown) : boolean
 >(v as unknown) : unknown
 >v as unknown : unknown
 >v : any
 
-        const f = #p2 in v; // Bad - Invalid privateID
->f : any
+        const g = #p2 in v; // Bad - Invalid privateID
+>g : any
 >#p2 in v : any
 >v : any
 
-        const g = (#p1) in v; // Bad - private id is not an expression on its own
->g : boolean
+        const h = (#p1) in v; // Bad - private id is not an expression on its own
+>h : boolean
 >(#p1) in v : boolean
 >(#p1) : any
 >#p1 : any
@@ -89,9 +96,10 @@ class Foo {
                 /*4*/v/*5*/
 >v : any
     }
-    flow(u: unknown, fb: Foo | Bar, fs: FooSub, b: Bar, fsb: FooSub | Bar) {
->flow : (u: unknown, fb: Foo | Bar, fs: FooSub, b: Bar, fsb: FooSub | Bar) => void
+    flow(u: unknown, n: never, fb: Foo | Bar, fs: FooSub, b: Bar, fsb: FooSub | Bar) {
+>flow : (u: unknown, n: never, fb: Foo | Bar, fs: FooSub, b: Bar, fsb: FooSub | Bar) => void
 >u : unknown
+>n : never
 >fb : Foo | Bar
 >fs : FooSub
 >b : Bar
@@ -102,6 +110,14 @@ class Foo {
 >typeof u : "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function"
 >u : unknown
 >'object' : "object"
+
+            if (#p1 in n) {
+>#p1 in n : boolean
+>n : never
+
+                n; // good n is never
+>n : never
+            }
 
             if (#p1 in u) {
 >#p1 in u : boolean
