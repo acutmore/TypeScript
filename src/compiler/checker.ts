@@ -23251,7 +23251,7 @@ namespace ts {
                 // TODO(aclaymore): verify assertion is valid
                 Debug.assert(ctorSigs.length > 0, "narrowTypeByPrivateIdentifierInInExpression should always find the class signature");
                 const instanceType = getReturnTypeOfSignature(ctorSigs[0]);
-                return getNarrowedType(type, instanceType, assumeTrue, isTypeSubtypeOf);
+                return getNarrowedType(type, instanceType, assumeTrue, isTypeDerivedFrom);
             }
 
             function narrowTypeByOptionalChainContainment(type: Type, operator: SyntaxKind, value: Expression, assumeTrue: boolean): Type {
