@@ -31345,6 +31345,7 @@ namespace ts {
             }
 
             markPropertyAsReferenced(lexicallyScopedSymbol, /* nodeForCheckWriteOnly: */ undefined, /* isThisAccess: */ false);
+            getNodeLinks(node).resolvedSymbol = lexicallyScopedSymbol;
 
             const exp = node.expression;
             let rightType = checkExpression(exp, checkMode);
@@ -38977,6 +38978,15 @@ namespace ts {
 
             if (name.parent.kind === SyntaxKind.TypePredicate) {
                 return resolveEntityName(<Identifier>name, /*meaning*/ SymbolFlags.FunctionScopedVariable);
+            }
+
+            if (isPrivateIdentifier(name) && isPrivateIdentifierInInExpression(name.parent)) {
+                const links = getNodeLinks(name.parent);
+                if (links.resolvedSymbol) {
+                    return links.resolvedSymbol;
+                }
+                checkPrivateIdentifierInInExpression(name.parent);
+                return links.resolvedSymbol;
             }
 
             // Do we want to return undefined here?
