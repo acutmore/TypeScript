@@ -34,6 +34,7 @@ namespace ts {
         // Class Fields Helpers
         createClassPrivateFieldGetHelper(receiver: Expression, state: Identifier, kind: PrivateIdentifierKind, f: Identifier | undefined): Expression;
         createClassPrivateFieldSetHelper(receiver: Expression, state: Identifier, value: Expression, kind: PrivateIdentifierKind, f: Identifier | undefined): Expression;
+        createClassPrivateFieldInHelper(receiver: Expression, privateField: Identifier): Expression;
     }
 
     export function createEmitHelperFactory(context: TransformationContext): EmitHelperFactory {
@@ -72,6 +73,7 @@ namespace ts {
             // Class Fields Helpers
             createClassPrivateFieldGetHelper,
             createClassPrivateFieldSetHelper,
+            createClassPrivateFieldInHelper
         };
 
         /**
@@ -392,6 +394,11 @@ namespace ts {
             return factory.createCallExpression(getUnscopedHelperName("__classPrivateFieldSet"), /*typeArguments*/ undefined, args);
         }
 
+        function createClassPrivateFieldInHelper(receiver: Expression, privateField: Identifier) {
+            // TODO(aclaymore): will need to change emit for static private fields
+            context.requestEmitHelper(classPrivateFieldInHelper);
+            return factory.createCallExpression(getUnscopedHelperName("__classPrivateFieldIn"), /* typeArguments*/ undefined, [receiver, privateField]);
+        }
     }
 
     /* @internal */
@@ -954,6 +961,19 @@ namespace ts {
             };`
     };
 
+    export const classPrivateFieldInHelper: UnscopedEmitHelper = {
+        name: "typescript:classPrivateFieldIn",
+        importName: "__classPrivateFieldIn",
+        scoped: false,
+        text: `
+            var __classPrivateFieldIn = (this && this.__classPrivateFieldIn) || function(receiver, privateMap) {
+                if (receiver === null || (typeof receiver !== 'object' && typeof receiver !== 'function')) {
+                    throw new TypeError("Cannot use 'in' operator on non-object");
+                }
+                return privateMap.has(receiver);
+            };`
+    };
+
     let allUnscopedEmitHelpers: ReadonlyESMap<string, UnscopedEmitHelper> | undefined;
 
     export function getAllUnscopedEmitHelpers() {
@@ -979,6 +999,7 @@ namespace ts {
             exportStarHelper,
             classPrivateFieldGetHelper,
             classPrivateFieldSetHelper,
+            classPrivateFieldInHelper,
             createBindingHelper,
             setModuleDefaultHelper
         ], helper => helper.name));

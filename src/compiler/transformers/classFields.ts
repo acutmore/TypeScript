@@ -213,18 +213,8 @@ namespace ts {
             if (info) {
                 const receiver = visitNode(node.expression, visitor, isExpression);
 
-                // TODO(aclaymore): will need to change emit for static private fields
-
-                // TODO(aclaymore): Should this be abstracted into a factory function?
                 return setOriginalNode(
-                    factory.createCallExpression(
-                        factory.createPropertyAccessExpression(
-                            info.weakMapName,
-                            "has"
-                        ),
-                        /* typeArguments: */ undefined,
-                        [receiver]
-                    ),
+                    context.getEmitHelperFactory().createClassPrivateFieldInHelper(receiver, info.weakMapName),
                     node
                 );
             }

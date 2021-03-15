@@ -11,7 +11,7 @@ class Foo {
 >check : Symbol(Foo.check, Decl(privateNameInInExpressionTransform.ts, 3, 12))
 >v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 4, 10))
 
-        #p1 in v; // expect `_p1.has(v)`
+        #p1 in v; // expect WeakMap '_p1'
 >v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 4, 10))
     }
     precedence(v: any) {
@@ -46,30 +46,40 @@ class Foo {
 >v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 7, 15))
 >v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 7, 15))
     }
-}
+    invalidLHS(v: any) {
+>invalidLHS : Symbol(Foo.invalidLHS, Decl(privateNameInInExpressionTransform.ts, 21, 5))
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 22, 15))
 
-class Bar {
->Bar : Symbol(Bar, Decl(privateNameInInExpressionTransform.ts, 22, 1))
+        'prop' in v = 10;
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 22, 15))
 
-    #p1 = 1;
->#p1 : Symbol(Bar.#p1, Decl(privateNameInInExpressionTransform.ts, 24, 11))
-
-    check(v: any) {
->check : Symbol(Bar.check, Decl(privateNameInInExpressionTransform.ts, 25, 12))
->v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 26, 10))
-
-        #p1 in v; // expect `_p1_1.has(v)`
->v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 26, 10))
+        #p1 in v = 10;
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 22, 15))
     }
 }
 
-function error(v: Foo) {
->error : Symbol(error, Decl(privateNameInInExpressionTransform.ts, 29, 1))
->v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 31, 15))
+class Bar {
+>Bar : Symbol(Bar, Decl(privateNameInInExpressionTransform.ts, 26, 1))
+
+    #p1 = 1;
+>#p1 : Symbol(Bar.#p1, Decl(privateNameInInExpressionTransform.ts, 28, 11))
+
+    check(v: any) {
+>check : Symbol(Bar.check, Decl(privateNameInInExpressionTransform.ts, 29, 12))
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 30, 10))
+
+        #p1 in v; // expect WeakMap '_p1_1'
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 30, 10))
+    }
+}
+
+function syntaxError(v: Foo) {
+>syntaxError : Symbol(syntaxError, Decl(privateNameInInExpressionTransform.ts, 33, 1))
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 35, 21))
 >Foo : Symbol(Foo, Decl(privateNameInInExpressionTransform.ts, 0, 0))
 
-    return #p1 in v; // expect `in v`
->v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 31, 15))
+    return #p1 in v; // expect `return in v` so runtime will have a syntax error
+>v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 35, 21))
 }
 
 export { }
