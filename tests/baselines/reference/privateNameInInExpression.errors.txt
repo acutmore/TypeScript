@@ -1,72 +1,78 @@
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(16,26): error TS2571: Object is of type 'unknown'.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(18,19): error TS2304: Cannot find name '#p2'.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(20,20): error TS2304: Cannot find name '#p1'.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(20,20): error TS18016: Private identifiers are not allowed outside class bodies.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(22,14): error TS2304: Cannot find name '#p1'.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(22,14): error TS18016: Private identifiers are not allowed outside class bodies.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(24,23): error TS2407: The right-hand side of a 'for...in' statement must be of type 'any', an object type or a type parameter, but here has type 'boolean'.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(42,24): error TS2531: Object is possibly 'null'.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(95,12): error TS18016: Private identifiers are not allowed outside class bodies.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(5,27): error TS2805: Static fields with private names can't have initializers when the '--useDefineForClassFields' flag is not specified with a '--target' of 'esnext'. Consider adding the '--useDefineForClassFields' flag.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(20,29): error TS2571: Object is of type 'unknown'.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(22,19): error TS2304: Cannot find name '#typo'.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(24,20): error TS2304: Cannot find name '#field'.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(24,20): error TS18016: Private identifiers are not allowed outside class bodies.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(26,14): error TS2304: Cannot find name '#field'.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(26,14): error TS18016: Private identifiers are not allowed outside class bodies.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(28,23): error TS2407: The right-hand side of a 'for...in' statement must be of type 'any', an object type or a type parameter, but here has type 'boolean'.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(45,27): error TS2531: Object is possibly 'null'.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(110,12): error TS18016: Private identifiers are not allowed outside class bodies.
 
 
-==== tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts (9 errors) ====
+==== tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts (10 errors) ====
     // TODO(aclaymore) split up into separate cases
     
     class Foo {
-        #p1 = 1;
+        #field = 1;
+        static #staticField = 2;
+                              ~
+!!! error TS2805: Static fields with private names can't have initializers when the '--useDefineForClassFields' flag is not specified with a '--target' of 'esnext'. Consider adding the '--useDefineForClassFields' flag.
+        #method() {}
+        static #staticMethod() {}
+    
         basics(v: any) {
-            const a = #p1 in v; // Good - a is boolean
+            const a = #field in v; // Good - a is boolean
     
-            const b = #p1 in v.p1.p2; // Good - b is boolean
+            const b = #field in v.p1.p2; // Good - b is boolean
     
-            const c = #p1 in (v as {}); // Good - c is boolean
+            const c = #field in (v as {}); // Good - c is boolean
     
-            const d = #p1 in (v as Foo); // Good d is boolean (not true)
+            const d = #field in (v as Foo); // Good d is boolean (not true)
     
-            const e = #p1 in (v as never); // Good e is boolean
+            const e = #field in (v as never); // Good e is boolean
     
-            const f = #p1 in (v as unknown); // Bad - RHS of in must be object type or any
-                             ~~~~~~~~~~~~~~
+            const f = #field in (v as unknown); // Bad - RHS of in must be object type or any
+                                ~~~~~~~~~~~~~~
 !!! error TS2571: Object is of type 'unknown'.
     
-            const g = #p2 in v; // Bad - Invalid privateID
-                      ~~~~~~~~
-!!! error TS2304: Cannot find name '#p2'.
+            const g = #typo in v; // Bad - Invalid privateID
+                      ~~~~~~~~~~
+!!! error TS2304: Cannot find name '#typo'.
     
-            const h = (#p1) in v; // Bad - private id is not an expression on its own
-                       ~~~
-!!! error TS2304: Cannot find name '#p1'.
-                       ~~~
+            const h = (#field) in v; // Bad - private id is not an expression on its own
+                       ~~~~~~
+!!! error TS2304: Cannot find name '#field'.
+                       ~~~~~~
 !!! error TS18016: Private identifiers are not allowed outside class bodies.
     
-            for (#p1 in v) { /* no-op */ } // Bad - 'in' not allowed
-                 ~~~
-!!! error TS2304: Cannot find name '#p1'.
-                 ~~~
+            for (#field in v) { /* no-op */ } // Bad - 'in' not allowed
+                 ~~~~~~
+!!! error TS2304: Cannot find name '#field'.
+                 ~~~~~~
 !!! error TS18016: Private identifiers are not allowed outside class bodies.
     
-            for (let x in #p1 in v) { /* no-op */ } // Bad - rhs of in should be a object/any
-                          ~~~~~~~~
+            for (let x in #field in v) { /* no-op */ } // Bad - rhs of in should be a object/any
+                          ~~~~~~~~~~~
 !!! error TS2407: The right-hand side of a 'for...in' statement must be of type 'any', an object type or a type parameter, but here has type 'boolean'.
     
-            for (let x in #p1 in v as any) { /* no-op */ } // Good - weird but valid
+            for (let x in #field in v as any) { /* no-op */ } // Good - weird but valid
     
         }
         whitespace(v: any) {
-            const a = v && /*0*/#p1/*1*/
+            const a = v && /*0*/#field/*1*/
                 /*2*/in/*3*/
                     /*4*/v/*5*/
         }
         flow(u: unknown, n: never, fb: Foo | Bar, fs: FooSub, b: Bar, fsb: FooSub | Bar) {
     
             if (typeof u === 'object') {
-    
-                if (#p1 in n) {
+                if (#field in n) {
                     n; // good n is never
                 }
     
-                if (#p1 in u) {
-                           ~
+                if (#field in u) {
+                              ~
 !!! error TS2531: Object is possibly 'null'.
                     u; // good u is Foo
                 } else {
@@ -74,33 +80,45 @@ tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.t
                 }
     
                 if (u !== null) {
-                    if (#p1 in u) {
+                    if (#field in u) {
                         u; // good u is Foo
                     } else {
                         u; // good u is object
                     }
+    
+                    if (#method in u) {
+                        u; // good u is Foo
+                    }
+    
+                    if (#staticField in u) {
+                        u; // good u is typeof Foo
+                    }
+    
+                    if (#staticMethod in u) {
+                        u; // good u is typeof Foo
+                    }
                 }
             }
     
-            if (#p1 in fb) {
+            if (#field in fb) {
                 fb; // good fb is Foo
             } else {
                 fb; // good fb is Bar
             }
     
-            if (#p1 in fs) {
+            if (#field in fs) {
                 fs; // good fs is FooSub
             } else {
                 fs; // good fs is never
             }
     
-            if (#p1 in b) {
+            if (#field in b) {
                 b; // good b is 'Bar & Foo'
             } else {
                 b; // good b is Bar
             }
     
-            if (#p1 in fsb) {
+            if (#field in fsb) {
                 fsb; // good fsb is FooSub
             } else {
                 fsb; // good fsb is Bar
@@ -108,7 +126,7 @@ tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.t
     
             class Nested {
                 m(v: any) {
-                    if (#p1 in v) {
+                    if (#field in v) {
                         v; // good v is Foo
                     }
                 }
@@ -120,8 +138,8 @@ tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.t
     class Bar { notFoo = true }
     
     function error(v: Foo) {
-        return #p1 in v; // Bad - outside of class
-               ~~~
+        return #field in v; // Bad - outside of class
+               ~~~~~~
 !!! error TS18016: Private identifiers are not allowed outside class bodies.
     }
     

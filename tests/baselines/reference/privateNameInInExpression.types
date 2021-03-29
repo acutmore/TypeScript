@@ -4,81 +4,91 @@
 class Foo {
 >Foo : Foo
 
-    #p1 = 1;
->#p1 : number
+    #field = 1;
+>#field : number
 >1 : 1
+
+    static #staticField = 2;
+>#staticField : number
+>2 : 2
+
+    #method() {}
+>#method : () => void
+
+    static #staticMethod() {}
+>#staticMethod : () => void
 
     basics(v: any) {
 >basics : (v: any) => void
 >v : any
 
-        const a = #p1 in v; // Good - a is boolean
+        const a = #field in v; // Good - a is boolean
 >a : boolean
->#p1 in v : boolean
+>#field in v : boolean
 >v : any
 
-        const b = #p1 in v.p1.p2; // Good - b is boolean
+        const b = #field in v.p1.p2; // Good - b is boolean
 >b : boolean
->#p1 in v.p1.p2 : boolean
+>#field in v.p1.p2 : boolean
 >v.p1.p2 : any
 >v.p1 : any
 >v : any
 >p1 : any
 >p2 : any
 
-        const c = #p1 in (v as {}); // Good - c is boolean
+        const c = #field in (v as {}); // Good - c is boolean
 >c : boolean
->#p1 in (v as {}) : boolean
+>#field in (v as {}) : boolean
 >(v as {}) : {}
 >v as {} : {}
 >v : any
 
-        const d = #p1 in (v as Foo); // Good d is boolean (not true)
+        const d = #field in (v as Foo); // Good d is boolean (not true)
 >d : boolean
->#p1 in (v as Foo) : boolean
+>#field in (v as Foo) : boolean
 >(v as Foo) : Foo
 >v as Foo : Foo
 >v : any
 
-        const e = #p1 in (v as never); // Good e is boolean
+        const e = #field in (v as never); // Good e is boolean
 >e : boolean
->#p1 in (v as never) : boolean
+>#field in (v as never) : boolean
 >(v as never) : never
 >v as never : never
 >v : any
 
-        const f = #p1 in (v as unknown); // Bad - RHS of in must be object type or any
+        const f = #field in (v as unknown); // Bad - RHS of in must be object type or any
 >f : boolean
->#p1 in (v as unknown) : boolean
+>#field in (v as unknown) : boolean
 >(v as unknown) : unknown
 >v as unknown : unknown
 >v : any
 
-        const g = #p2 in v; // Bad - Invalid privateID
+        const g = #typo in v; // Bad - Invalid privateID
 >g : any
->#p2 in v : any
+>#typo in v : any
 >v : any
 
-        const h = (#p1) in v; // Bad - private id is not an expression on its own
+        const h = (#field) in v; // Bad - private id is not an expression on its own
 >h : boolean
->(#p1) in v : boolean
->(#p1) : any
->#p1 : any
+>(#field) in v : boolean
+>(#field) : any
+>#field : any
 >v : any
 
-        for (#p1 in v) { /* no-op */ } // Bad - 'in' not allowed
->#p1 : any
+        for (#field in v) { /* no-op */ } // Bad - 'in' not allowed
+>#field : any
 >v : any
 
-        for (let x in #p1 in v) { /* no-op */ } // Bad - rhs of in should be a object/any
+        for (let x in #field in v) { /* no-op */ } // Bad - rhs of in should be a object/any
 >x : string
->#p1 in v : boolean
+>#field in v : boolean
 >v : any
 
-        for (let x in #p1 in v as any) { /* no-op */ } // Good - weird but valid
+        for (let x in #field in v as any) { /* no-op */ } // Good - weird but valid
 >x : string
->#p1 in v as any : any
->#p1 in v : boolean
+>#field in v as any : any
+>#field in v : boolean
 >v : any
 
     }
@@ -86,11 +96,11 @@ class Foo {
 >whitespace : (v: any) => void
 >v : any
 
-        const a = v && /*0*/#p1/*1*/
+        const a = v && /*0*/#field/*1*/
 >a : any
->v && /*0*/#p1/*1*/            /*2*/in/*3*/                /*4*/v : any
+>v && /*0*/#field/*1*/            /*2*/in/*3*/                /*4*/v : any
 >v : any
->#p1/*1*/            /*2*/in/*3*/                /*4*/v : boolean
+>#field/*1*/            /*2*/in/*3*/                /*4*/v : boolean
 
             /*2*/in/*3*/
                 /*4*/v/*5*/
@@ -111,16 +121,16 @@ class Foo {
 >u : unknown
 >'object' : "object"
 
-            if (#p1 in n) {
->#p1 in n : boolean
+            if (#field in n) {
+>#field in n : boolean
 >n : never
 
                 n; // good n is never
 >n : never
             }
 
-            if (#p1 in u) {
->#p1 in u : boolean
+            if (#field in u) {
+>#field in u : boolean
 >u : object | null
 
                 u; // good u is Foo
@@ -136,8 +146,8 @@ class Foo {
 >u : object | null
 >null : null
 
-                if (#p1 in u) {
->#p1 in u : boolean
+                if (#field in u) {
+>#field in u : boolean
 >u : object
 
                     u; // good u is Foo
@@ -147,11 +157,35 @@ class Foo {
                     u; // good u is object
 >u : object
                 }
+
+                if (#method in u) {
+>#method in u : boolean
+>u : object
+
+                    u; // good u is Foo
+>u : Foo
+                }
+
+                if (#staticField in u) {
+>#staticField in u : boolean
+>u : object
+
+                    u; // good u is typeof Foo
+>u : typeof Foo
+                }
+
+                if (#staticMethod in u) {
+>#staticMethod in u : boolean
+>u : object
+
+                    u; // good u is typeof Foo
+>u : typeof Foo
+                }
             }
         }
 
-        if (#p1 in fb) {
->#p1 in fb : boolean
+        if (#field in fb) {
+>#field in fb : boolean
 >fb : Foo | Bar
 
             fb; // good fb is Foo
@@ -162,8 +196,8 @@ class Foo {
 >fb : Bar
         }
 
-        if (#p1 in fs) {
->#p1 in fs : boolean
+        if (#field in fs) {
+>#field in fs : boolean
 >fs : FooSub
 
             fs; // good fs is FooSub
@@ -174,8 +208,8 @@ class Foo {
 >fs : never
         }
 
-        if (#p1 in b) {
->#p1 in b : boolean
+        if (#field in b) {
+>#field in b : boolean
 >b : Bar
 
             b; // good b is 'Bar & Foo'
@@ -186,8 +220,8 @@ class Foo {
 >b : Bar
         }
 
-        if (#p1 in fsb) {
->#p1 in fsb : boolean
+        if (#field in fsb) {
+>#field in fsb : boolean
 >fsb : Bar | FooSub
 
             fsb; // good fsb is FooSub
@@ -205,8 +239,8 @@ class Foo {
 >m : (v: any) => void
 >v : any
 
-                if (#p1 in v) {
->#p1 in v : boolean
+                if (#field in v) {
+>#field in v : boolean
 >v : any
 
                     v; // good v is Foo
@@ -232,8 +266,8 @@ function error(v: Foo) {
 >error : (v: Foo) => any
 >v : Foo
 
-    return #p1 in v; // Bad - outside of class
->#p1 in v : any
+    return #field in v; // Bad - outside of class
+>#field in v : any
 >v : Foo
 }
 

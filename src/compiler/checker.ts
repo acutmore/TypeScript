@@ -23238,8 +23238,6 @@ namespace ts {
                     return type;
                 }
 
-                // TODO(aclaymore): add logic for private static fields
-
                 const privateId = expr.name;
                 const symbol = lookupSymbolForPrivateIdentifierDeclaration(privateId.escapedText, privateId);
                 if (symbol === undefined) {
@@ -23247,11 +23245,21 @@ namespace ts {
                 }
                 const classSymbol = symbol.parent!;
                 const classType = <InterfaceType>getTypeOfSymbol(classSymbol);
-                const ctorSigs = getSignaturesOfType(classType, SignatureKind.Construct);
-                // TODO(aclaymore): verify assertion is valid
-                Debug.assert(ctorSigs.length > 0, "narrowTypeByPrivateIdentifierInInExpression should always find the class signature");
-                const instanceType = getReturnTypeOfSignature(ctorSigs[0]);
-                return getNarrowedType(type, instanceType, assumeTrue, isTypeDerivedFrom);
+                // TODO(aclaymore): clean up finding out if the identifier is 'static'
+                const decleration = symbol.declarations?.[0];
+                Debug.assert(decleration, "narrowTypeByPrivateIdentifierInInExpression should always get the field declaration");
+                const isStatic = hasSyntacticModifier(decleration, ModifierFlags.Static);
+                let targetType: Type;
+                if (isStatic) {
+                    targetType = classType
+                }
+                else {
+                    const ctorSigs = getSignaturesOfType(classType, SignatureKind.Construct);
+                    // TODO(aclaymore): verify assertion is valid
+                    Debug.assert(ctorSigs.length > 0, "narrowTypeByPrivateIdentifierInInExpression should always find the class signature");
+                    targetType = getReturnTypeOfSignature(ctorSigs[0]);
+                }
+                return getNarrowedType(type, targetType, assumeTrue, isTypeDerivedFrom);
             }
 
             function narrowTypeByOptionalChainContainment(type: Type, operator: SyntaxKind, value: Expression, assumeTrue: boolean): Type {
