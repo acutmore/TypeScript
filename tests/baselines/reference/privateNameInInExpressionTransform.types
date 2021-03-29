@@ -1,19 +1,39 @@
 === tests/cases/conformance/classes/members/privateNames/privateNameInInExpressionTransform.ts ===
-// TODO(aclaymore) add cases for static fields
-
 class Foo {
 >Foo : Foo
 
-    #p1 = 1;
->#p1 : number
+    #field = 1;
+>#field : number
 >1 : 1
+
+    #method() {}
+>#method : () => void
+
+    static #staticField= 2;
+>#staticField : number
+>2 : 2
+
+    static #staticMethod() {}
+>#staticMethod : () => void
 
     check(v: any) {
 >check : (v: any) => void
 >v : any
 
-        #p1 in v; // expect WeakMap '_Foo_p1'
->#p1 in v : boolean
+        #field in v; // expect Foo's 'field' WeakMap
+>#field in v : boolean
+>v : any
+
+        #method in v; // expect Foo's 'method' WeakSet
+>#method in v : boolean
+>v : any
+
+        #staticField in v; // expect Foo's constructor
+>#staticField in v : boolean
+>v : any
+
+        #staticMethod in v; // expect Foo's constructor
+>#staticMethod in v : boolean
 >v : any
     }
     precedence(v: any) {
@@ -24,43 +44,43 @@ class Foo {
         // '<'  has same precedence than 'in'
         // '<<' has higher precedence than 'in'
 
-        v == #p1 in v == v; // Good precedence: ((v == (#p1 in v)) == v)
->v == #p1 in v == v : boolean
->v == #p1 in v : boolean
+        v == #field in v == v; // Good precedence: ((v == (#field in v)) == v)
+>v == #field in v == v : boolean
+>v == #field in v : boolean
 >v : any
->#p1 in v : boolean
+>#field in v : boolean
 >v : any
 >v : any
 
-        v << #p1 in v << v; // Good precedence: (v << (#p1 in (v << v)))
->v << #p1 in v << v : number
+        v << #field in v << v; // Good precedence: (v << (#field in (v << v)))
+>v << #field in v << v : number
 >v : any
->#p1 in v << v : boolean
+>#field in v << v : boolean
 >v << v : number
 >v : any
 >v : any
 
-        v << #p1 in v == v; // Good precedence: ((v << (#p1 in v)) == v)
->v << #p1 in v == v : boolean
->v << #p1 in v : number
+        v << #field in v == v; // Good precedence: ((v << (#field in v)) == v)
+>v << #field in v == v : boolean
+>v << #field in v : number
 >v : any
->#p1 in v : boolean
->v : any
->v : any
-
-        v == #p1 in v < v; // Good precedence: (v == ((#p1 in v) < v))
->v == #p1 in v < v : boolean
->v : any
->#p1 in v < v : boolean
->#p1 in v : boolean
+>#field in v : boolean
 >v : any
 >v : any
 
-        #p1 in v && #p1 in v; // Good precedence: ((#p1 in v) && (#p1 in v))
->#p1 in v && #p1 in v : boolean
->#p1 in v : boolean
+        v == #field in v < v; // Good precedence: (v == ((#field in v) < v))
+>v == #field in v < v : boolean
 >v : any
->#p1 in v : boolean
+>#field in v < v : boolean
+>#field in v : boolean
+>v : any
+>v : any
+
+        #field in v && #field in v; // Good precedence: ((#field in v) && (#field in v))
+>#field in v && #field in v : boolean
+>#field in v : boolean
+>v : any
+>#field in v : boolean
 >v : Foo
     }
     invalidLHS(v: any) {
@@ -73,8 +93,8 @@ class Foo {
 >v : any
 >10 : 10
 
-        #p1 in v = 10;
->#p1 in v : boolean
+        #field in v = 10;
+>#field in v : boolean
 >v : any
 >10 : 10
     }
@@ -83,16 +103,16 @@ class Foo {
 class Bar {
 >Bar : Bar
 
-    #p1 = 1;
->#p1 : number
+    #field = 1;
+>#field : number
 >1 : 1
 
     check(v: any) {
 >check : (v: any) => void
 >v : any
 
-        #p1 in v; // expect WeakMap '_Bar_p1'
->#p1 in v : boolean
+        #field in v; // expect Bar's 'field' WeakMap
+>#field in v : boolean
 >v : any
     }
 }
@@ -101,8 +121,8 @@ function syntaxError(v: Foo) {
 >syntaxError : (v: Foo) => any
 >v : Foo
 
-    return #p1 in v; // expect `return in v` so runtime will have a syntax error
->#p1 in v : any
+    return #field in v; // expect `return in v` so runtime will have a syntax error
+>#field in v : any
 >v : Foo
 }
 

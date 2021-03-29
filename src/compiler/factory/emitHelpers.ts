@@ -34,7 +34,7 @@ namespace ts {
         // Class Fields Helpers
         createClassPrivateFieldGetHelper(receiver: Expression, state: Identifier, kind: PrivateIdentifierKind, f: Identifier | undefined): Expression;
         createClassPrivateFieldSetHelper(receiver: Expression, state: Identifier, value: Expression, kind: PrivateIdentifierKind, f: Identifier | undefined): Expression;
-        createClassPrivateFieldInHelper(receiver: Expression, privateField: Identifier): Expression;
+        createClassPrivateFieldInHelper(receiver: Expression, state: Identifier): Expression;
     }
 
     export function createEmitHelperFactory(context: TransformationContext): EmitHelperFactory {
@@ -394,10 +394,10 @@ namespace ts {
             return factory.createCallExpression(getUnscopedHelperName("__classPrivateFieldSet"), /*typeArguments*/ undefined, args);
         }
 
-        function createClassPrivateFieldInHelper(receiver: Expression, privateField: Identifier) {
+        function createClassPrivateFieldInHelper(receiver: Expression, state: Identifier) {
             // TODO(aclaymore): will need to change emit for static private fields
             context.requestEmitHelper(classPrivateFieldInHelper);
-            return factory.createCallExpression(getUnscopedHelperName("__classPrivateFieldIn"), /* typeArguments*/ undefined, [receiver, privateField]);
+            return factory.createCallExpression(getUnscopedHelperName("__classPrivateFieldIn"), /* typeArguments*/ undefined, [receiver, state]);
         }
     }
 
@@ -966,11 +966,9 @@ namespace ts {
         importName: "__classPrivateFieldIn",
         scoped: false,
         text: `
-            var __classPrivateFieldIn = (this && this.__classPrivateFieldIn) || function(receiver, privateMap) {
-                if (receiver === null || (typeof receiver !== 'object' && typeof receiver !== 'function')) {
-                    throw new TypeError("Cannot use 'in' operator on non-object");
-                }
-                return privateMap.has(receiver);
+            var __classPrivateFieldIn = (this && this.__classPrivateFieldIn) || function(receiver, state) {
+                if (receiver === null || (typeof receiver !== "object" && typeof receiver !== "function")) throw new TypeError("Cannot use 'in' operator on non-object");
+                return typeof state === "function" ? receiver === state : state.has(receiver);
             };`
     };
 

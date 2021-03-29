@@ -1,42 +1,47 @@
 // @target: es2020
 
-// TODO(aclaymore) add cases for static fields
-
 class Foo {
-    #p1 = 1;
+    #field = 1;
+    #method() {}
+    static #staticField= 2;
+    static #staticMethod() {}
+
     check(v: any) {
-        #p1 in v; // expect WeakMap '_Foo_p1'
+        #field in v; // expect Foo's 'field' WeakMap
+        #method in v; // expect Foo's 'method' WeakSet
+        #staticField in v; // expect Foo's constructor
+        #staticMethod in v; // expect Foo's constructor
     }
     precedence(v: any) {
         // '==' has lower precedence than 'in'
         // '<'  has same precedence than 'in'
         // '<<' has higher precedence than 'in'
 
-        v == #p1 in v == v; // Good precedence: ((v == (#p1 in v)) == v)
+        v == #field in v == v; // Good precedence: ((v == (#field in v)) == v)
 
-        v << #p1 in v << v; // Good precedence: (v << (#p1 in (v << v)))
+        v << #field in v << v; // Good precedence: (v << (#field in (v << v)))
 
-        v << #p1 in v == v; // Good precedence: ((v << (#p1 in v)) == v)
+        v << #field in v == v; // Good precedence: ((v << (#field in v)) == v)
 
-        v == #p1 in v < v; // Good precedence: (v == ((#p1 in v) < v))
+        v == #field in v < v; // Good precedence: (v == ((#field in v) < v))
 
-        #p1 in v && #p1 in v; // Good precedence: ((#p1 in v) && (#p1 in v))
+        #field in v && #field in v; // Good precedence: ((#field in v) && (#field in v))
     }
     invalidLHS(v: any) {
         'prop' in v = 10;
-        #p1 in v = 10;
+        #field in v = 10;
     }
 }
 
 class Bar {
-    #p1 = 1;
+    #field = 1;
     check(v: any) {
-        #p1 in v; // expect WeakMap '_Bar_p1'
+        #field in v; // expect Bar's 'field' WeakMap
     }
 }
 
 function syntaxError(v: Foo) {
-    return #p1 in v; // expect `return in v` so runtime will have a syntax error
+    return #field in v; // expect `return in v` so runtime will have a syntax error
 }
 
 export { }
