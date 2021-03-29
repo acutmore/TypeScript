@@ -87,6 +87,11 @@ namespace ts {
         return node.kind === SyntaxKind.EqualsGreaterThanToken;
     }
 
+    /*@internal*/
+    export function isInKeyword(node: Node): node is InKeyword {
+        return node.kind === SyntaxKind.InKeyword;
+    }
+
     // Identifiers
 
     export function isIdentifier(node: Node): node is Identifier {

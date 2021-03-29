@@ -1013,6 +1013,7 @@ namespace ts {
 
     export type AssertsKeyword = KeywordToken<SyntaxKind.AssertsKeyword>;
     export type AwaitKeyword = KeywordToken<SyntaxKind.AwaitKeyword>;
+    export type InKeyword = KeywordToken<SyntaxKind.InKeyword>;
 
     /** @deprecated Use `AwaitKeyword` instead. */
     export type AwaitKeywordToken = AwaitKeyword;

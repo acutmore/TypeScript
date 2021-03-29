@@ -12,7 +12,7 @@ class Foo {
 >check : (v: any) => void
 >v : any
 
-        #p1 in v; // expect WeakMap '_p1'
+        #p1 in v; // expect WeakMap '_Foo_p1'
 >#p1 in v : boolean
 >v : any
     }
@@ -91,7 +91,7 @@ class Bar {
 >check : (v: any) => void
 >v : any
 
-        #p1 in v; // expect WeakMap '_p1_1'
+        #p1 in v; // expect WeakMap '_Bar_p1'
 >#p1 in v : boolean
 >v : any
     }

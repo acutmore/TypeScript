@@ -5,7 +5,7 @@
 class Foo {
     #p1 = 1;
     check(v: any) {
-        #p1 in v; // expect WeakMap '_p1'
+        #p1 in v; // expect WeakMap '_Foo_p1'
     }
     precedence(v: any) {
         // '==' has lower precedence than 'in'
@@ -31,7 +31,7 @@ class Foo {
 class Bar {
     #p1 = 1;
     check(v: any) {
-        #p1 in v; // expect WeakMap '_p1_1'
+        #p1 in v; // expect WeakMap '_Bar_p1'
     }
 }
 

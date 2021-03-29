@@ -206,7 +206,7 @@ namespace ts {
          * Visits `#id in expr`
          */
         function visitPrivateIdentifierInInExpression(node: PrivateIdentifierInInExpression) {
-            if (!shouldTransformPrivateFields) {
+            if (!shouldTransformPrivateElements) {
                 return node;
             }
             const info = accessPrivateIdentifier(node.name);
@@ -214,7 +214,7 @@ namespace ts {
                 const receiver = visitNode(node.expression, visitor, isExpression);
 
                 return setOriginalNode(
-                    context.getEmitHelperFactory().createClassPrivateFieldInHelper(receiver, info.weakMapName),
+                    context.getEmitHelperFactory().createClassPrivateFieldInHelper(receiver, info.brandCheckIdentifier),
                     node
                 );
             }

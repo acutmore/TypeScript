@@ -11,7 +11,7 @@ class Foo {
 >check : Symbol(Foo.check, Decl(privateNameInInExpressionTransform.ts, 3, 12))
 >v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 4, 10))
 
-        #p1 in v; // expect WeakMap '_p1'
+        #p1 in v; // expect WeakMap '_Foo_p1'
 >v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 4, 10))
     }
     precedence(v: any) {
@@ -68,7 +68,7 @@ class Bar {
 >check : Symbol(Bar.check, Decl(privateNameInInExpressionTransform.ts, 29, 12))
 >v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 30, 10))
 
-        #p1 in v; // expect WeakMap '_p1_1'
+        #p1 in v; // expect WeakMap '_Bar_p1'
 >v : Symbol(v, Decl(privateNameInInExpressionTransform.ts, 30, 10))
     }
 }

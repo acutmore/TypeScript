@@ -6555,6 +6555,13 @@ namespace ts {
                     case SyntaxKind.BinaryExpression:
                         return preprintBinaryExpression(node as BinaryExpression);
 
+                    case SyntaxKind.PrivateIdentifierInInExpression:
+                        Debug.type<PrivateIdentifierInInExpression>(node);
+                        return factory.updatePrivateIdentifierInInExpression(node,
+                            visitMemberName(node.name, isPrivateIdentifier),
+                            visit(node.inToken, isInKeyword),
+                            visitExpression(node.expression));
+
                     case SyntaxKind.ConditionalExpression:
                         Debug.type<ConditionalExpression>(node);
                         return factory.updateConditionalExpression(node,
