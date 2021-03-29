@@ -395,7 +395,6 @@ namespace ts {
         }
 
         function createClassPrivateFieldInHelper(receiver: Expression, state: Identifier) {
-            // TODO(aclaymore): will need to change emit for static private fields
             context.requestEmitHelper(classPrivateFieldInHelper);
             return factory.createCallExpression(getUnscopedHelperName("__classPrivateFieldIn"), /* typeArguments*/ undefined, [receiver, state]);
         }

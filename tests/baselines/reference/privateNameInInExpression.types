@@ -1,6 +1,4 @@
 === tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts ===
-// TODO(aclaymore) split up into separate cases
-
 class Foo {
 >Foo : Foo
 
@@ -262,14 +260,12 @@ class Bar { notFoo = true }
 >notFoo : boolean
 >true : true
 
-function error(v: Foo) {
->error : (v: Foo) => any
+function badSyntax(v: Foo) {
+>badSyntax : (v: Foo) => any
 >v : Foo
 
     return #field in v; // Bad - outside of class
 >#field in v : any
 >v : Foo
 }
-
-export { }
 

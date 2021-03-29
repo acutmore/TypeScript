@@ -1,6 +1,4 @@
 //// [privateNameInInExpression.ts]
-// TODO(aclaymore) split up into separate cases
-
 class Foo {
     #field = 1;
     static #staticField = 2;
@@ -107,15 +105,13 @@ class Foo {
 class FooSub extends Foo { subTypeOfFoo = true }
 class Bar { notFoo = true }
 
-function error(v: Foo) {
+function badSyntax(v: Foo) {
     return #field in v; // Bad - outside of class
 }
 
-export { }
-
 
 //// [privateNameInInExpression.js]
-// TODO(aclaymore) split up into separate cases
+"use strict";
 class Foo {
     constructor() {
         this.#field = 1;
@@ -216,7 +212,6 @@ class Bar {
         this.notFoo = true;
     }
 }
-function error(v) {
+function badSyntax(v) {
     return #field in v; // Bad - outside of class
 }
-export {};

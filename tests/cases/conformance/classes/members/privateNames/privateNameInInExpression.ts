@@ -1,8 +1,6 @@
 // @strict: true
 // @target: esnext
 
-// TODO(aclaymore) split up into separate cases
-
 class Foo {
     #field = 1;
     static #staticField = 2;
@@ -109,8 +107,6 @@ class Foo {
 class FooSub extends Foo { subTypeOfFoo = true }
 class Bar { notFoo = true }
 
-function error(v: Foo) {
+function badSyntax(v: Foo) {
     return #field in v; // Bad - outside of class
 }
-
-export { }

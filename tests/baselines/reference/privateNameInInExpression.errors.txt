@@ -1,18 +1,16 @@
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(5,27): error TS2805: Static fields with private names can't have initializers when the '--useDefineForClassFields' flag is not specified with a '--target' of 'esnext'. Consider adding the '--useDefineForClassFields' flag.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(20,29): error TS2571: Object is of type 'unknown'.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(22,19): error TS2304: Cannot find name '#typo'.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(24,20): error TS2304: Cannot find name '#field'.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(24,20): error TS18016: Private identifiers are not allowed outside class bodies.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(26,14): error TS2304: Cannot find name '#field'.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(26,14): error TS18016: Private identifiers are not allowed outside class bodies.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(28,23): error TS2407: The right-hand side of a 'for...in' statement must be of type 'any', an object type or a type parameter, but here has type 'boolean'.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(45,27): error TS2531: Object is possibly 'null'.
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(110,12): error TS18016: Private identifiers are not allowed outside class bodies.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(3,27): error TS2805: Static fields with private names can't have initializers when the '--useDefineForClassFields' flag is not specified with a '--target' of 'esnext'. Consider adding the '--useDefineForClassFields' flag.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(18,29): error TS2571: Object is of type 'unknown'.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(20,19): error TS2304: Cannot find name '#typo'.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(22,20): error TS2304: Cannot find name '#field'.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(22,20): error TS18016: Private identifiers are not allowed outside class bodies.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(24,14): error TS2304: Cannot find name '#field'.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(24,14): error TS18016: Private identifiers are not allowed outside class bodies.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(26,23): error TS2407: The right-hand side of a 'for...in' statement must be of type 'any', an object type or a type parameter, but here has type 'boolean'.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(43,27): error TS2531: Object is possibly 'null'.
+tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(108,12): error TS18016: Private identifiers are not allowed outside class bodies.
 
 
 ==== tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts (10 errors) ====
-    // TODO(aclaymore) split up into separate cases
-    
     class Foo {
         #field = 1;
         static #staticField = 2;
@@ -137,11 +135,9 @@ tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.t
     class FooSub extends Foo { subTypeOfFoo = true }
     class Bar { notFoo = true }
     
-    function error(v: Foo) {
+    function badSyntax(v: Foo) {
         return #field in v; // Bad - outside of class
                ~~~~~~
 !!! error TS18016: Private identifiers are not allowed outside class bodies.
     }
-    
-    export { }
     

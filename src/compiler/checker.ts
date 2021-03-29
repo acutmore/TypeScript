@@ -23245,18 +23245,15 @@ namespace ts {
                 }
                 const classSymbol = symbol.parent!;
                 const classType = <InterfaceType>getTypeOfSymbol(classSymbol);
-                // TODO(aclaymore): clean up finding out if the identifier is 'static'
-                const decleration = symbol.declarations?.[0];
-                Debug.assert(decleration, "narrowTypeByPrivateIdentifierInInExpression should always get the field declaration");
-                const isStatic = hasSyntacticModifier(decleration, ModifierFlags.Static);
+                const firstDecl = symbol.declarations?.[0];
+                Debug.assert(firstDecl, "should always have a declaration");
                 let targetType: Type;
-                if (isStatic) {
-                    targetType = classType
+                if (hasSyntacticModifier(firstDecl, ModifierFlags.Static)) {
+                    targetType = classType;
                 }
                 else {
                     const ctorSigs = getSignaturesOfType(classType, SignatureKind.Construct);
-                    // TODO(aclaymore): verify assertion is valid
-                    Debug.assert(ctorSigs.length > 0, "narrowTypeByPrivateIdentifierInInExpression should always find the class signature");
+                    Debug.assert(ctorSigs.length > 0, "should always have a constructor");
                     targetType = getReturnTypeOfSignature(ctorSigs[0]);
                 }
                 return getNarrowedType(type, targetType, assumeTrue, isTypeDerivedFrom);

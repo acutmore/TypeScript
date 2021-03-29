@@ -4441,7 +4441,6 @@ namespace ts {
             Debug.assert(inDisallowInContext() === false, "parsePrivateIdentifierInInExpression should only have been called if 'in' is allowed");
             const id = parsePrivateIdentifier();
             if (token() !== SyntaxKind.InKeyword) {
-                // TODO(aclaymore) use better error
                 return createMissingNode(SyntaxKind.InKeyword, /*reportAtCurrentPosition*/ true, Diagnostics._0_expected, tokenToString(SyntaxKind.InKeyword));
             }
 
