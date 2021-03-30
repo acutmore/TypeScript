@@ -16,16 +16,16 @@ class Foo {
     static #staticMethod() {}
 >#staticMethod : () => void
 
-    basics(v: any) {
->basics : (v: any) => void
+    goodRhs(v: any) {
+>goodRhs : (v: any) => void
 >v : any
 
-        const a = #field in v; // Good - a is boolean
+        const a = #field in v;
 >a : boolean
 >#field in v : boolean
 >v : any
 
-        const b = #field in v.p1.p2; // Good - b is boolean
+        const b = #field in v.p1.p2;
 >b : boolean
 >#field in v.p1.p2 : boolean
 >v.p1.p2 : any
@@ -34,61 +34,64 @@ class Foo {
 >p1 : any
 >p2 : any
 
-        const c = #field in (v as {}); // Good - c is boolean
+        const c = #field in (v as {});
 >c : boolean
 >#field in (v as {}) : boolean
 >(v as {}) : {}
 >v as {} : {}
 >v : any
 
-        const d = #field in (v as Foo); // Good d is boolean (not true)
+        const d = #field in (v as Foo);
 >d : boolean
 >#field in (v as Foo) : boolean
 >(v as Foo) : Foo
 >v as Foo : Foo
 >v : any
 
-        const e = #field in (v as never); // Good e is boolean
+        const e = #field in (v as never);
 >e : boolean
 >#field in (v as never) : boolean
 >(v as never) : never
 >v as never : never
 >v : any
 
-        const f = #field in (v as unknown); // Bad - RHS of in must be object type or any
->f : boolean
+        for (let f in #field in v as any) { /**/ } // unlikely but valid
+>f : string
+>#field in v as any : any
+>#field in v : boolean
+>v : any
+    }
+    badRhs(v: any) {
+>badRhs : (v: any) => void
+>v : any
+
+        const a = #field in (v as unknown); // Bad - RHS of in must be object type or any
+>a : boolean
 >#field in (v as unknown) : boolean
 >(v as unknown) : unknown
 >v as unknown : unknown
 >v : any
 
-        const g = #typo in v; // Bad - Invalid privateID
->g : any
->#typo in v : any
+        const b = #fiel in v; // Bad - typo in privateID
+>b : any
+>#fiel in v : any
 >v : any
 
-        const h = (#field) in v; // Bad - private id is not an expression on its own
->h : boolean
+        const c = (#field) in v; // Bad - privateID is not an expression on its own
+>c : boolean
 >(#field) in v : boolean
 >(#field) : any
 >#field : any
 >v : any
 
-        for (#field in v) { /* no-op */ } // Bad - 'in' not allowed
+        for (#field in v) { /**/ } // Bad - 'in' not allowed
 >#field : any
 >v : any
 
-        for (let x in #field in v) { /* no-op */ } // Bad - rhs of in should be a object/any
->x : string
+        for (let d in #field in v) { /**/ } // Bad - rhs of in should be a object/any
+>d : string
 >#field in v : boolean
 >v : any
-
-        for (let x in #field in v as any) { /* no-op */ } // Good - weird but valid
->x : string
->#field in v as any : any
->#field in v : boolean
->v : any
-
     }
     whitespace(v: any) {
 >whitespace : (v: any) => void

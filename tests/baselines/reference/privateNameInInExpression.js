@@ -5,29 +5,29 @@ class Foo {
     #method() {}
     static #staticMethod() {}
 
-    basics(v: any) {
-        const a = #field in v; // Good - a is boolean
+    goodRhs(v: any) {
+        const a = #field in v;
 
-        const b = #field in v.p1.p2; // Good - b is boolean
+        const b = #field in v.p1.p2;
 
-        const c = #field in (v as {}); // Good - c is boolean
+        const c = #field in (v as {});
 
-        const d = #field in (v as Foo); // Good d is boolean (not true)
+        const d = #field in (v as Foo);
 
-        const e = #field in (v as never); // Good e is boolean
+        const e = #field in (v as never);
 
-        const f = #field in (v as unknown); // Bad - RHS of in must be object type or any
+        for (let f in #field in v as any) { /**/ } // unlikely but valid
+    }
+    badRhs(v: any) {
+        const a = #field in (v as unknown); // Bad - RHS of in must be object type or any
 
-        const g = #typo in v; // Bad - Invalid privateID
+        const b = #fiel in v; // Bad - typo in privateID
 
-        const h = (#field) in v; // Bad - private id is not an expression on its own
+        const c = (#field) in v; // Bad - privateID is not an expression on its own
 
-        for (#field in v) { /* no-op */ } // Bad - 'in' not allowed
+        for (#field in v) { /**/ } // Bad - 'in' not allowed
 
-        for (let x in #field in v) { /* no-op */ } // Bad - rhs of in should be a object/any
-
-        for (let x in #field in v as any) { /* no-op */ } // Good - weird but valid
-
+        for (let d in #field in v) { /**/ } // Bad - rhs of in should be a object/any
     }
     whitespace(v: any) {
         const a = v && /*0*/#field/*1*/
@@ -120,18 +120,20 @@ class Foo {
     static #staticField;
     #method() { }
     static #staticMethod() { }
-    basics(v) {
-        const a = #field in v; // Good - a is boolean
-        const b = #field in v.p1.p2; // Good - b is boolean
-        const c = #field in v; // Good - c is boolean
-        const d = #field in v; // Good d is boolean (not true)
-        const e = #field in v; // Good e is boolean
-        const f = #field in v; // Bad - RHS of in must be object type or any
-        const g = #typo in v; // Bad - Invalid privateID
-        const h = (#field) in v; // Bad - private id is not an expression on its own
-        for (#field in v) { /* no-op */ } // Bad - 'in' not allowed
-        for (let x in #field in v) { /* no-op */ } // Bad - rhs of in should be a object/any
-        for (let x in #field in v) { /* no-op */ } // Good - weird but valid
+    goodRhs(v) {
+        const a = #field in v;
+        const b = #field in v.p1.p2;
+        const c = #field in v;
+        const d = #field in v;
+        const e = #field in v;
+        for (let f in #field in v) { /**/ } // unlikely but valid
+    }
+    badRhs(v) {
+        const a = #field in v; // Bad - RHS of in must be object type or any
+        const b = #fiel in v; // Bad - typo in privateID
+        const c = (#field) in v; // Bad - privateID is not an expression on its own
+        for (#field in v) { /**/ } // Bad - 'in' not allowed
+        for (let d in #field in v) { /**/ } // Bad - rhs of in should be a object/any
     }
     whitespace(v) {
         const a = v && /*0*/ #field/*1*/ 

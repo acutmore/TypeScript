@@ -27303,6 +27303,7 @@ namespace ts {
         }
 
         function getSuggestedSymbolForNonexistentProperty(name: Identifier | PrivateIdentifier | string, containingType: Type): Symbol | undefined {
+            const originalName = name;
             let props = getPropertiesOfType(containingType);
             if (typeof name !== "string") {
                 const parent = name.parent;
@@ -27311,7 +27312,23 @@ namespace ts {
                 }
                 name = idText(name);
             }
-            return getSpellingSuggestionForName(name, props, SymbolFlags.Value);
+            const suggestion = getSpellingSuggestionForName(name, props, SymbolFlags.Value);
+            if (suggestion) {
+                return suggestion;
+            }
+            // If we have `#typo in expr` then we can still look up potential privateIdentifiers from the surrounding classes
+            if (typeof originalName !== "string" && isPrivateIdentifierInInExpression(originalName.parent)) {
+                const privateIdentifiers: Symbol[] = [];
+                forEachEnclosingClass(originalName, (klass: ClassLikeDeclaration) => {
+                    forEach(klass.members, member => {
+                        if (isPrivateIdentifierClassElementDeclaration(member)) {
+                            privateIdentifiers.push(member.symbol);
+                        }
+                    });
+                });
+                return getSpellingSuggestionForName(name, privateIdentifiers, SymbolFlags.Value);
+            }
+            return undefined;
         }
 
         function getSuggestedSymbolForNonexistentJSXAttribute(name: Identifier | PrivateIdentifier | string, containingType: Type): Symbol | undefined {
@@ -31337,14 +31354,23 @@ namespace ts {
 
         function checkPrivateIdentifierInInExpression(node: PrivateIdentifierInInExpression, checkMode?: CheckMode) {
             const privateId = node.name;
+            const exp = node.expression;
+            let rightType = checkExpression(exp, checkMode);
+
             const lexicallyScopedSymbol = lookupSymbolForPrivateIdentifierDeclaration(privateId.escapedText, privateId);
             if (lexicallyScopedSymbol === undefined) {
                 if (!getContainingClass(node)) {
                     error(privateId, Diagnostics.Private_identifiers_are_not_allowed_outside_class_bodies);
                 }
                 else {
-                    // TODO(aclamore): suggest similar name
-                    error(node, Diagnostics.Cannot_find_name_0, diagnosticName(privateId));
+                    const suggestion = getSuggestedSymbolForNonexistentProperty(privateId, rightType);
+                    if (suggestion) {
+                        const suggestedName = symbolName(suggestion);
+                        error(privateId, Diagnostics.Cannot_find_name_0_Did_you_mean_1, diagnosticName(privateId), suggestedName);
+                    }
+                    else {
+                        error(privateId, Diagnostics.Cannot_find_name_0, diagnosticName(privateId));
+                    }
                 }
                 return anyType;
             }
@@ -31352,8 +31378,6 @@ namespace ts {
             markPropertyAsReferenced(lexicallyScopedSymbol, /* nodeForCheckWriteOnly: */ undefined, /* isThisAccess: */ false);
             getNodeLinks(node).resolvedSymbol = lexicallyScopedSymbol;
 
-            const exp = node.expression;
-            let rightType = checkExpression(exp, checkMode);
             if (rightType === silentNeverType) {
                 return silentNeverType;
             }

@@ -14,54 +14,57 @@ class Foo {
     static #staticMethod() {}
 >#staticMethod : Symbol(Foo.#staticMethod, Decl(privateNameInInExpression.ts, 3, 16))
 
-    basics(v: any) {
->basics : Symbol(Foo.basics, Decl(privateNameInInExpression.ts, 4, 29))
->v : Symbol(v, Decl(privateNameInInExpression.ts, 6, 11))
+    goodRhs(v: any) {
+>goodRhs : Symbol(Foo.goodRhs, Decl(privateNameInInExpression.ts, 4, 29))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 6, 12))
 
-        const a = #field in v; // Good - a is boolean
+        const a = #field in v;
 >a : Symbol(a, Decl(privateNameInInExpression.ts, 7, 13))
->v : Symbol(v, Decl(privateNameInInExpression.ts, 6, 11))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 6, 12))
 
-        const b = #field in v.p1.p2; // Good - b is boolean
+        const b = #field in v.p1.p2;
 >b : Symbol(b, Decl(privateNameInInExpression.ts, 9, 13))
->v : Symbol(v, Decl(privateNameInInExpression.ts, 6, 11))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 6, 12))
 
-        const c = #field in (v as {}); // Good - c is boolean
+        const c = #field in (v as {});
 >c : Symbol(c, Decl(privateNameInInExpression.ts, 11, 13))
->v : Symbol(v, Decl(privateNameInInExpression.ts, 6, 11))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 6, 12))
 
-        const d = #field in (v as Foo); // Good d is boolean (not true)
+        const d = #field in (v as Foo);
 >d : Symbol(d, Decl(privateNameInInExpression.ts, 13, 13))
->v : Symbol(v, Decl(privateNameInInExpression.ts, 6, 11))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 6, 12))
 >Foo : Symbol(Foo, Decl(privateNameInInExpression.ts, 0, 0))
 
-        const e = #field in (v as never); // Good e is boolean
+        const e = #field in (v as never);
 >e : Symbol(e, Decl(privateNameInInExpression.ts, 15, 13))
->v : Symbol(v, Decl(privateNameInInExpression.ts, 6, 11))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 6, 12))
 
-        const f = #field in (v as unknown); // Bad - RHS of in must be object type or any
->f : Symbol(f, Decl(privateNameInInExpression.ts, 17, 13))
->v : Symbol(v, Decl(privateNameInInExpression.ts, 6, 11))
+        for (let f in #field in v as any) { /**/ } // unlikely but valid
+>f : Symbol(f, Decl(privateNameInInExpression.ts, 17, 16))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 6, 12))
+    }
+    badRhs(v: any) {
+>badRhs : Symbol(Foo.badRhs, Decl(privateNameInInExpression.ts, 18, 5))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 19, 11))
 
-        const g = #typo in v; // Bad - Invalid privateID
->g : Symbol(g, Decl(privateNameInInExpression.ts, 19, 13))
->v : Symbol(v, Decl(privateNameInInExpression.ts, 6, 11))
+        const a = #field in (v as unknown); // Bad - RHS of in must be object type or any
+>a : Symbol(a, Decl(privateNameInInExpression.ts, 20, 13))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 19, 11))
 
-        const h = (#field) in v; // Bad - private id is not an expression on its own
->h : Symbol(h, Decl(privateNameInInExpression.ts, 21, 13))
->v : Symbol(v, Decl(privateNameInInExpression.ts, 6, 11))
+        const b = #fiel in v; // Bad - typo in privateID
+>b : Symbol(b, Decl(privateNameInInExpression.ts, 22, 13))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 19, 11))
 
-        for (#field in v) { /* no-op */ } // Bad - 'in' not allowed
->v : Symbol(v, Decl(privateNameInInExpression.ts, 6, 11))
+        const c = (#field) in v; // Bad - privateID is not an expression on its own
+>c : Symbol(c, Decl(privateNameInInExpression.ts, 24, 13))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 19, 11))
 
-        for (let x in #field in v) { /* no-op */ } // Bad - rhs of in should be a object/any
->x : Symbol(x, Decl(privateNameInInExpression.ts, 25, 16))
->v : Symbol(v, Decl(privateNameInInExpression.ts, 6, 11))
+        for (#field in v) { /**/ } // Bad - 'in' not allowed
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 19, 11))
 
-        for (let x in #field in v as any) { /* no-op */ } // Good - weird but valid
->x : Symbol(x, Decl(privateNameInInExpression.ts, 27, 16))
->v : Symbol(v, Decl(privateNameInInExpression.ts, 6, 11))
-
+        for (let d in #field in v) { /**/ } // Bad - rhs of in should be a object/any
+>d : Symbol(d, Decl(privateNameInInExpression.ts, 28, 16))
+>v : Symbol(v, Decl(privateNameInInExpression.ts, 19, 11))
     }
     whitespace(v: any) {
 >whitespace : Symbol(Foo.whitespace, Decl(privateNameInInExpression.ts, 29, 5))
