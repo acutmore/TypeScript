@@ -1,4 +1,3 @@
-tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(3,27): error TS2805: Static fields with private names can't have initializers when the '--useDefineForClassFields' flag is not specified with a '--target' of 'esnext'. Consider adding the '--useDefineForClassFields' flag.
 tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(21,29): error TS2571: Object is of type 'unknown'.
 tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(23,19): error TS2552: Cannot find name '#fiel'. Did you mean '#field'?
 tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(25,20): error TS2304: Cannot find name '#field'.
@@ -10,12 +9,10 @@ tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.t
 tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts(108,12): error TS18016: Private identifiers are not allowed outside class bodies.
 
 
-==== tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts (10 errors) ====
+==== tests/cases/conformance/classes/members/privateNames/privateNameInInExpression.ts (9 errors) ====
     class Foo {
         #field = 1;
         static #staticField = 2;
-                              ~
-!!! error TS2805: Static fields with private names can't have initializers when the '--useDefineForClassFields' flag is not specified with a '--target' of 'esnext'. Consider adding the '--useDefineForClassFields' flag.
         #method() {}
         static #staticMethod() {}
     

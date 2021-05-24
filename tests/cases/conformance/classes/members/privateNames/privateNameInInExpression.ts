@@ -1,5 +1,6 @@
 // @strict: true
 // @target: esnext
+// @useDefineForClassFields: true
 
 class Foo {
     #field = 1;

@@ -220,7 +220,6 @@ namespace ts {
             }
 
             // Private name has not been declared. Subsequent transformers will handle this error
-            // TODO(aclaymore): confirm this is how we want to handle the error
             return visitEachChild(node, visitor, context);
         }
 

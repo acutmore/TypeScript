@@ -23245,16 +23245,15 @@ namespace ts {
                 }
                 const classSymbol = symbol.parent!;
                 const classType = <InterfaceType>getTypeOfSymbol(classSymbol);
-                const firstDecl = symbol.declarations?.[0];
-                Debug.assert(firstDecl, "should always have a declaration");
+                const classDecl = symbol.valueDeclaration;
+                Debug.assert(classDecl, "should always have a declaration");
                 let targetType: Type;
-                if (hasSyntacticModifier(firstDecl, ModifierFlags.Static)) {
+                if (hasStaticModifier(classDecl)) {
                     targetType = classType;
                 }
                 else {
-                    const ctorSigs = getSignaturesOfType(classType, SignatureKind.Construct);
-                    Debug.assert(ctorSigs.length > 0, "should always have a constructor");
-                    targetType = getReturnTypeOfSignature(ctorSigs[0]);
+                    const classInstanceType = getDeclaredTypeOfSymbol(classSymbol);
+                    targetType = classInstanceType;
                 }
                 return getNarrowedType(type, targetType, assumeTrue, isTypeDerivedFrom);
             }

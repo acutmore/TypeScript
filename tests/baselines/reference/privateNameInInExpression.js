@@ -113,11 +113,8 @@ function badSyntax(v: Foo) {
 //// [privateNameInInExpression.js]
 "use strict";
 class Foo {
-    constructor() {
-        this.#field = 1;
-    }
-    #field;
-    static #staticField;
+    #field = 1;
+    static #staticField = 2;
     #method() { }
     static #staticMethod() { }
     goodRhs(v) {
@@ -202,17 +199,11 @@ class Foo {
         }
     }
 }
-Foo.#staticField = 2;
 class FooSub extends Foo {
-    constructor() {
-        super(...arguments);
-        this.subTypeOfFoo = true;
-    }
+    subTypeOfFoo = true;
 }
 class Bar {
-    constructor() {
-        this.notFoo = true;
-    }
+    notFoo = true;
 }
 function badSyntax(v) {
     return #field in v; // Bad - outside of class

@@ -3580,9 +3580,6 @@ namespace ts {
                         return getBinaryOperatorPrecedence(operatorKind);
                 }
 
-            case SyntaxKind.PrivateIdentifierInInExpression:
-                return OperatorPrecedence.Relational;
-
             // TODO: Should prefix `++` and `--` be moved to the `Update` precedence?
             case SyntaxKind.TypeAssertionExpression:
             case SyntaxKind.NonNullExpression:
@@ -3609,6 +3606,7 @@ namespace ts {
                 return OperatorPrecedence.Member;
 
             case SyntaxKind.AsExpression:
+            case SyntaxKind.PrivateIdentifierInInExpression:
                 return OperatorPrecedence.Relational;
 
             case SyntaxKind.ThisKeyword:
