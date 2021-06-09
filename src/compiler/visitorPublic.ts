@@ -794,10 +794,11 @@ namespace ts {
                     nodeVisitor(node.right, visitor, isExpression));
 
             case SyntaxKind.PrivateIdentifierInInExpression:
-                return factory.updatePrivateIdentifierInInExpression(<PrivateIdentifierInInExpression>node,
-                    nodeVisitor((<PrivateIdentifierInInExpression>node).name, visitor, isMemberName),
-                    nodeVisitor((<PrivateIdentifierInInExpression>node).inToken, tokenVisitor, isToken),
-                    nodeVisitor((<PrivateIdentifierInInExpression>node).expression, visitor, isExpression));
+                Debug.type<PrivateIdentifierInInExpression>(node);
+                return factory.updatePrivateIdentifierInInExpression(node,
+                    nodeVisitor((node).name, visitor, isMemberName),
+                    nodeVisitor((node).inToken, tokenVisitor, isToken),
+                    nodeVisitor((node).expression, visitor, isExpression));
 
             case SyntaxKind.ConditionalExpression:
                 Debug.type<ConditionalExpression>(node);

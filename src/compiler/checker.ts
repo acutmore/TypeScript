@@ -23602,7 +23602,7 @@ namespace ts {
                     return type;
                 }
                 const classSymbol = symbol.parent!;
-                const classType = <InterfaceType>getTypeOfSymbol(classSymbol);
+                const classType = getTypeOfSymbol(classSymbol) as InterfaceType;
                 const classDecl = symbol.valueDeclaration;
                 Debug.assert(classDecl, "should always have a declaration");
                 let targetType: Type;
